@@ -1,10 +1,31 @@
 spring:
   application:
-    # // TODO: RENAME ME
-    name: spring-6-project-template
+    name: kbe-brewery-beer-micro-service
   docker:
     compose:
       enabled: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      write-date-timestamps-as-nanoseconds: true
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
+  jpa:
+    hibernate:
+      ddl-auto: update
+  zipkin:
+    enabled: true
+  cloud:
+    discovery:
+      enabled: false
+  artemis:
+    user: artemis
+    password: simetraehcapa
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: default      
 
 management:
   health:
@@ -41,3 +62,15 @@ logbook:
   predicate:
     exclude:
       - path: /actuator/health
+        
+sfg:
+  brewery:
+    beer-inventory-service-host: http://localhost:8082
+    inventory-user: good
+    inventory-password: beer
+
+feign:
+  client:
+    config:
+      default:
+        logger-level: full        
