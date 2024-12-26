@@ -1,7 +1,6 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.config;
 
 
-import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -27,7 +26,7 @@ public class BlockingRestTemplateCustomizer implements RestTemplateCustomizer {
 
         RequestConfig requestConfig = RequestConfig
                 .custom()
-                .setConnectionRequestTimeout(Timeout.ofDays(3000))
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(3000))
                 //.setSocketTimeout(3000)
                 .build();
 
@@ -40,7 +39,7 @@ public class BlockingRestTemplateCustomizer implements RestTemplateCustomizer {
 
         
 
-        return new HttpComponentsClientHttpRequestFactory((HttpClient) httpClient);
+        return new HttpComponentsClientHttpRequestFactory(httpClient);
     }
 
     @Override

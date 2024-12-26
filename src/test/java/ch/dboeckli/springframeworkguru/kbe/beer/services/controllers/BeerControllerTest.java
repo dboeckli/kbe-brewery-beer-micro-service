@@ -12,9 +12,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -31,7 +31,8 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -41,7 +42,7 @@ class BeerControllerTest {
     public static final String GALAXY_CAT = "Galaxy Cat";
     public static final String OAC_SPEC = "https://raw.githubusercontent.com/sfg-beer-works/brewery-api/master/spec/openapi.yaml";
 
-    @MockBean
+    @MockitoBean
     BeerService beerService;
 
     @Autowired
@@ -129,8 +130,8 @@ class BeerControllerTest {
             mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)));
-                    //.andExpect(openApi().isValid(OAC_SPEC));
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -144,8 +145,8 @@ class BeerControllerTest {
                     .param("pageSize", "200"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)));
-                    //.andExpect(openApi().isValid(OAC_SPEC));
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -159,8 +160,8 @@ class BeerControllerTest {
                     .param("pageSize", "200"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)));
-                    //.andExpect(openApi().isValid(OAC_SPEC));
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -174,8 +175,8 @@ class BeerControllerTest {
                     .param("beerName", GALAXY_CAT))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)));
-                    //.andExpect(openApi().isValid(OAC_SPEC));
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(anyString(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -190,8 +191,8 @@ class BeerControllerTest {
                     .param("beerStyle", "IPA"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)));
-                    //.andExpect(openApi().isValid(OAC_SPEC));
+                    .andExpect(jsonPath("$.content", hasSize(2)))
+                    .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), any(BeerStyleEnum.class), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -210,8 +211,8 @@ class BeerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.beerName", is("Beer1")))
-                .andExpect(jsonPath("$.createdDate").isNotEmpty());
-                //.andExpect(openApi().isValid(OAC_SPEC));
+                .andExpect(jsonPath("$.createdDate").isNotEmpty())
+                .andExpect(openApi().isValid(OAC_SPEC));
 
     }
 
@@ -252,7 +253,6 @@ class BeerControllerTest {
                     .andExpect(status().isBadRequest());
 
             verifyNoInteractions(beerService);
-            //then(beerService).shouldHaveZeroInteractions();
         }
     }
 
@@ -289,7 +289,6 @@ class BeerControllerTest {
                     .andExpect(status().isBadRequest());
 
             verifyNoInteractions(beerService);
-            //then(beerService).shouldHaveZeroInteractions();
         }
     }
 }
