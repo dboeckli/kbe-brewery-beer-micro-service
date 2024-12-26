@@ -51,7 +51,7 @@
         <sonar.language>java</sonar.language>
         <jacoco.version>0.8.12</jacoco.version>
 
-        <swagger-request-validator.version>2.15.1</swagger-request-validator.version>
+        <swagger-request-validator.version>2.44.1</swagger-request-validator.version>
 
         <git-commit-id-maven-plugin.version>9.0.1</git-commit-id-maven-plugin.version>
         <!--suppress UnresolvedMavenProperty -->
