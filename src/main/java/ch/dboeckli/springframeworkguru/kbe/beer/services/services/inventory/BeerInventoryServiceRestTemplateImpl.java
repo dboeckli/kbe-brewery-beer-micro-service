@@ -3,7 +3,6 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerInventoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,7 +20,6 @@ import java.util.UUID;
  */
 @Profile("!local-discovery & !digitalocean")
 @Slf4j
-@ConfigurationProperties(prefix = "sfg.brewery", ignoreUnknownFields = true)
 @Component
 public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryService {
 
@@ -30,32 +28,30 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
 
     private String beerInventoryServiceHost;
 
-
-    public void setBeerInventoryServiceHost(String beerInventoryServiceHost) {
-        this.beerInventoryServiceHost = beerInventoryServiceHost;
-    }
-
-
-    public BeerInventoryServiceRestTemplateImpl(RestTemplateBuilder restTemplateBuilder, @Value("${sfg.brewery.inventory-user}") String inventoryUser,
-                                                @Value("${sfg.brewery.inventory-password}") String inventoryPassword) {
+    public BeerInventoryServiceRestTemplateImpl(RestTemplateBuilder restTemplateBuilder, 
+                                                @Value("${sfg.brewery.inventory-user}") String inventoryUser,
+                                                @Value("${sfg.brewery.inventory-password}") String inventoryPassword,
+                                                @Value("${sfg.brewery.beer-inventory-service-host}") String beerInventoryServiceHost) {
         this.restTemplate = restTemplateBuilder.basicAuthentication(inventoryUser, inventoryPassword).build();
+        this.beerInventoryServiceHost = beerInventoryServiceHost;
     }
 
     @Override
     public Integer getOnhandInventory(UUID beerId) {
 
-        log.debug("Calling Inventory Service - BeerId: " + beerId);
+        log.info("Calling Inventory Service - BeerId: " + beerId);
 
         ResponseEntity<List<BeerInventoryDto>> responseEntity = restTemplate
                 .exchange(beerInventoryServiceHost + INVENTORY_PATH, HttpMethod.GET, null,
-                        new ParameterizedTypeReference<List<BeerInventoryDto>>(){}, (Object) beerId);
+                    new ParameterizedTypeReference<>() {
+                    }, beerId);
 
         Integer onHand = Objects.requireNonNull(responseEntity.getBody())
                 .stream()
                 .mapToInt(BeerInventoryDto::getQuantityOnHand)
                 .sum();
 
-        log.debug("BeerId: " + beerId + " On hand is: " + onHand);
+        log.info("BeerId: " + beerId + " On hand is: " + onHand);
 
         return onHand;
     }

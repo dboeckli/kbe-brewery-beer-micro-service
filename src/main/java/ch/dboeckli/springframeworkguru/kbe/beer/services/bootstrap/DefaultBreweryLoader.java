@@ -52,14 +52,14 @@ public class DefaultBreweryLoader implements CommandLineRunner {
 
 
     @Override
-    public void run(String... args) throws Exception {
-        log.debug("Initializing Data");
+    public void run(String... args) {
+        log.info("Initializing Data");
 
         loadBreweryData();
         loadBeerData();
 
         cacheManager.getCache("beerListCache").clear();
-        log.debug("Data Initialized. Beer Records loaded {}", beerRepository.count());
+        log.info("Data Initialized. Beer Records loaded {}", beerRepository.count());
     }
 
 
