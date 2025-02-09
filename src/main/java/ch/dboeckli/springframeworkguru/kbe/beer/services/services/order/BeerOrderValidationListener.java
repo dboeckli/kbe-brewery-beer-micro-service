@@ -25,7 +25,7 @@ public class BeerOrderValidationListener {
 
         Boolean orderIsValid = beerOrderValidator.validateOrder(event.getBeerOrder());
 
-        log.debug("Validation Result for Order Id: " + event.getBeerOrder() + " is: " + orderIsValid);
+        log.info("Validation Result for Order Id: " + event.getBeerOrder() + " is: " + orderIsValid);
 
         jmsTemplate.convertAndSend(JmsConfig.VALIDATE_ORDER_RESULT_QUEUE, BeerOrderValidationResult.builder()
                 .beerOrderId(event.getBeerOrder().getId())
