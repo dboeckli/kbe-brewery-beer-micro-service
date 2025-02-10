@@ -29,7 +29,7 @@ services:
         - 8083:8083   
           
     inventory-service:
-      image: local/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
+      image: domboeckli/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
       ports:
         - 8082:8082
       depends_on:
