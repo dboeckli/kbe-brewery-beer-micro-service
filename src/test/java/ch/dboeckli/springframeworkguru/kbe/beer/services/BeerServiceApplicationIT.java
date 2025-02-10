@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
 @DirtiesContext
 @Slf4j
-class BeerServiceApplicationTest {
+class BeerServiceApplicationIT {
 
     @Autowired
     private ApplicationContext applicationContext;
