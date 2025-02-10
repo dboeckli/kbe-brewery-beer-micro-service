@@ -10,7 +10,8 @@ spring:
       enabled: true
       stop:
         command: down
-      
+      skip:
+        in-tests: false
   jackson:
     serialization:
       write-dates-as-timestamps: false

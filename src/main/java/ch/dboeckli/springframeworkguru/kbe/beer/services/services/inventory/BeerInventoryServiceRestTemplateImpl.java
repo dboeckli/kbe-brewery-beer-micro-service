@@ -26,7 +26,7 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
     public static final String INVENTORY_PATH = "/api/v1/beer/{beerId}/inventory";
     private final RestTemplate restTemplate;
 
-    private String beerInventoryServiceHost;
+    private final String beerInventoryServiceHost;
 
     public BeerInventoryServiceRestTemplateImpl(RestTemplateBuilder restTemplateBuilder, 
                                                 @Value("${sfg.brewery.inventory-user}") String inventoryUser,
@@ -39,7 +39,7 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
     @Override
     public Integer getOnhandInventory(UUID beerId) {
 
-        log.info("Calling Inventory Service - BeerId: " + beerId);
+        log.debug("Calling Inventory Service - BeerId: " + beerId);
 
         ResponseEntity<List<BeerInventoryDto>> responseEntity = restTemplate
                 .exchange(beerInventoryServiceHost + INVENTORY_PATH, HttpMethod.GET, null,
@@ -51,7 +51,7 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
                 .mapToInt(BeerInventoryDto::getQuantityOnHand)
                 .sum();
 
-        log.info("BeerId: " + beerId + " On hand is: " + onHand);
+        log.debug("BeerId: " + beerId + " On hand is: " + onHand);
 
         return onHand;
     }
