@@ -29,6 +29,7 @@ spring:
   artemis:
     user: artemis
     password: simetraehcapa
+    broker-url: tcp://localhost:61616
     
   datasource:
     url: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC

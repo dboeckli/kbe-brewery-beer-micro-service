@@ -9,10 +9,19 @@ services:
           - '3306'    
           
     jms:
+        container_name: jms
         image: apache/activemq-artemis:2.39.0
+        environment:
+          ARTEMIS_USER: artemis
+          ARTEMIS_PASSWORD: simetraehcapa
         ports:
             - 8161:8161
             - 61616:61616
+        healthcheck:
+          test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
+          interval: 10s
+          timeout: 5s
+          retries: 5    
               
     inventory-failover:
       image: domboeckli/kbe-brewery-inventory-failover:0.0.1-SNAPSHOT
@@ -20,7 +29,7 @@ services:
         - 8083:8083   
           
     inventory-service:
-      image: domboeckli/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
+      image: local/kbe-brewery-inventory-micro-service:0.0.13-SNAPSHOT
       ports:
         - 8082:8082
       depends_on:
@@ -31,7 +40,9 @@ services:
         SPRING_DATASOURCE_PASSWORD: dbpassword
         SPRING_JPA_HIBERNATE_DDL-AUTO: update
         SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/beerservice?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
-        SPRING_ARTEMIS_HOST: jms
+        SPRING_ARTEMIS_USER: artemis
+        SPRING_ARTEMIS_PASSWORD: simetraehcapa
+        SPRING_ARTEMIS_BROKER_URL: tcp://jms:61616
       restart: on-failure
       labels:
         collect_logs_with_filebeat: "true"
