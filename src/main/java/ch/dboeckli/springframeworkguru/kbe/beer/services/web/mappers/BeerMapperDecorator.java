@@ -1,8 +1,8 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

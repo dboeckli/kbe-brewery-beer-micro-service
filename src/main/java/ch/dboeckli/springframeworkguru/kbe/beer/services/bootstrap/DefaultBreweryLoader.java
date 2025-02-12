@@ -18,9 +18,9 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.bootstrap;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Brewery;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BreweryRepository;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

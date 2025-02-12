@@ -17,7 +17,7 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.repositories;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

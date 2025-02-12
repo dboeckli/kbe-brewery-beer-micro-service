@@ -17,9 +17,9 @@
 
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerPagedList;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.UUID;

@@ -16,7 +16,7 @@
  */
 package ch.dboeckli.springframeworkguru.kbe.beer.services.domain;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.*;

@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.config.FeignClientConfig;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerInventoryDto;
+import ch.guru.springframework.kbe.lib.dto.BeerInventoryDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
