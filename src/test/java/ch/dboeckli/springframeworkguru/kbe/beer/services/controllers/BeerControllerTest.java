@@ -1,11 +1,11 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.controllers;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.bootstrap.DefaultBreweryLoader;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerPagedList;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.BeerService;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers.BeerController;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
@@ -87,7 +87,7 @@ class BeerControllerTest {
 
     @DisplayName("List Ops - ")
     @Nested
-    public class TestListOperations {
+    class TestListOperations {
 
         @Captor
         ArgumentCaptor<String> beerNameCaptor;
@@ -218,7 +218,7 @@ class BeerControllerTest {
 
     @DisplayName("Save Ops - ")
     @Nested
-    public class TestSaveOperations {
+    class TestSaveOperations {
         @Test
         void testSaveNewBeer() throws Exception {
             //given
@@ -258,7 +258,7 @@ class BeerControllerTest {
 
     @DisplayName("Save Ops - ")
     @Nested
-    public class TestUpdateOperations {
+    class TestUpdateOperations {
 
         @Test
         void testUpdateBeer() throws Exception {

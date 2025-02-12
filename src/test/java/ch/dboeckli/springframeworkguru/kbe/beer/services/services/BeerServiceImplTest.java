@@ -1,15 +1,15 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerPagedList;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers.BeerMapper;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers.BeerMapperImpl;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers.BeerMapperImpl_;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers.DateMapper;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -77,7 +77,7 @@ class BeerServiceImplTest {
 
     @DisplayName("List Ops - ")
     @Nested
-    public class TestListOptions {
+    class TestListOptions {
         private List<Beer> beerList;
         private PageImpl<Beer> beerPage;
 

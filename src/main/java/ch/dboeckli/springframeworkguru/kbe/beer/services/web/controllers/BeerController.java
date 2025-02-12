@@ -17,10 +17,10 @@
 
 package ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerPagedList;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.BeerService;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -122,9 +122,7 @@ public class BeerController {
     ResponseEntity<List> badReqeustHandler(ConstraintViolationException e){
         List<String> errors = new ArrayList<>(e.getConstraintViolations().size());
 
-        e.getConstraintViolations().forEach(constraintViolation -> {
-            errors.add(constraintViolation.getPropertyPath().toString() + " : " + constraintViolation.getMessage());
-        });
+        e.getConstraintViolations().forEach(constraintViolation -> errors.add(constraintViolation.getPropertyPath().toString() + " : " + constraintViolation.getMessage()));
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }

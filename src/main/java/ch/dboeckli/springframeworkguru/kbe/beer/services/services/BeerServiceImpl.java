@@ -18,11 +18,11 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerPagedList;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerStyleEnum;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers.BeerMapper;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
+import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

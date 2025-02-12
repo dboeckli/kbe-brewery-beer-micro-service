@@ -1,6 +1,6 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerInventoryDto;
+import ch.guru.springframework.kbe.lib.dto.BeerInventoryDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -30,7 +30,7 @@ public class BeerInventoryServiceFeign implements BeerInventoryService {
         try {
             ResponseEntity<List<BeerInventoryDto>> responseEntity = inventoryServiceFeignClient.getOnhandInventory(beerId);
 
-            if (responseEntity.getBody() != null && responseEntity.getBody().size() > 0) {
+            if (responseEntity.getBody() != null && !responseEntity.getBody().isEmpty()) {
                 log.info("Inventory found, summing inventory");
 
                 onHand = Objects.requireNonNull(responseEntity.getBody())

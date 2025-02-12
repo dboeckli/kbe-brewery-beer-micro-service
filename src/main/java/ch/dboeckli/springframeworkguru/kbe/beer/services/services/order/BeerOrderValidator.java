@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services.order;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerOrderDto;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
+import ch.guru.springframework.kbe.lib.dto.BeerOrderDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

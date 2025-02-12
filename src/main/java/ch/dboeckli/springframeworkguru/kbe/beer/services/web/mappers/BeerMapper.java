@@ -18,7 +18,7 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerDto;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
 

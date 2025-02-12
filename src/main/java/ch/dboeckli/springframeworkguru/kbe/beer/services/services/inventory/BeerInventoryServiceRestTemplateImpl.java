@@ -1,6 +1,6 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.BeerInventoryDto;
+import ch.guru.springframework.kbe.lib.dto.BeerInventoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

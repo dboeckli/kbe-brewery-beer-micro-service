@@ -2,10 +2,10 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.services.brewing;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.dto.events.BrewBeerEvent;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.mappers.BeerMapper;
+import ch.guru.springframework.kbe.lib.events.BrewBeerEvent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
