@@ -9,14 +9,20 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    # TODO: IMPLEMENT TESTING FOR JMS CONNECTION
     - name: test-jms-connection
       image: apache/activemq-artemis:2.41.0
       command: [ '/bin/sh', '-c' ]
       args:
         - |
-          echo "### Test Not implemented yet: MySQL Connection using service name: {{ include "beer-micro-service-jms.fullname" . }}"
+          echo "### Testing Artemis JMS connection : {{ include "beer-micro-service-jms.fullname" . }}"
+          artemis queue stat --url tcp://{{ include "beer-micro-service-jms.fullname" . }}:{{ .Values.service.broker.port }} --user $ARTEMIS_USERNAME --password $ARTEMIS_PASSWORD --silent
+          if [ $? -eq 0 ]; then
+            echo "Successfully connected to Artemis JMS broker"
+          else
+            echo "Failed to connect to Artemis JMS broker"
+          fi
           echo "Exit code: $?"
+
       envFrom:
         - secretRef:
             name: {{ include "beer-micro-service-jms.fullname" . }}-secrets
