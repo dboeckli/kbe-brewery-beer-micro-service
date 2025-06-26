@@ -15,8 +15,6 @@ spec:
       args:
         - |
           echo "### Testing Artemis JMS connection : {{ include "jms.fullname" . }}"
-          echo "ARTEMIS_USERNAME: ${ARTEMIS_USER}"
-          echo "ARTEMIS_PASSWORD: ${ARTEMIS_PASSWORD}"
           /opt/activemq-artemis/bin/artemis queue stat --url tcp://{{ include "jms.fullname" . }}:{{ .Values.service.broker.port }} --user "${ARTEMIS_USER}" --password "${ARTEMIS_PASSWORD}" --silent
           if [ $? -eq 0 ]; then
             echo "Successfully connected to Artemis JMS broker"
