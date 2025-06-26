@@ -1,0 +1,10 @@
+global:
+  namespace: kbe-brewery-beer-micro-service
+
+jms:
+  port: 8161
+  targetPort: 8161
+  nodePort: 30161
+  
+  user: artemis
+  password: simetraehcapa

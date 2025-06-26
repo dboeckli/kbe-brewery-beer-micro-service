@@ -8,7 +8,7 @@ mysql:
   
   database: "beerservice"
 
-  user: root
+  user: user
   password: dbpassword
 
   rootPassword: dbpassword

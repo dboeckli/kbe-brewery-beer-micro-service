@@ -37,11 +37,6 @@ spec:
             - name: mysql
               containerPort: {{ .Values.mysql.port }}
               protocol: TCP
-          volumeMounts:
-            - name: mysql-data
-              mountPath: /var/lib/mysql
-            - name: mysql-init-script
-              mountPath: /docker-entrypoint-initdb.d
           readinessProbe:
             tcpSocket:
               port: {{ .Values.mysql.port }}

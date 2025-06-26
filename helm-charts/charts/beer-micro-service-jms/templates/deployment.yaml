@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "beer-micro-service-jms.fullname" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "beer-micro-service-jms.labels" . | nindent 4 }}
+    app.kubernetes.io/component: jms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "beer-micro-service-jms.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: jms
+  template:
+    metadata:
+      labels:
+        {{- include "beer-micro-service-jms.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: jms
+    spec:
+      containers:
+        - name: jms
+          image: apache/activemq-artemis:2.41.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: {{ include "beer-micro-service-jms.fullname" . }}-secrets
+          ports:
+            - name: jms
+              containerPort: {{ .Values.jms.port }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.jms.port }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.jms.port }}

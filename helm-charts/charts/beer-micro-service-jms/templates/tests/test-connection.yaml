@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "beer-micro-service-jms.fullname" . }}-test-connection"
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "beer-micro-service-jms.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    # TODO: IMPLEMENT TESTING FOR JMS CONNECTION
+    - name: test-jms-connection
+      image: apache/activemq-artemis:2.41.0
+      command: [ '/bin/sh', '-c' ]
+      args:
+        - |
+          echo "### Test Not implemented yet: MySQL Connection using service name: {{ include "beer-micro-service-jms.fullname" . }}"
+          echo "Exit code: $?"
+      envFrom:
+        - secretRef:
+            name: {{ include "beer-micro-service-jms.fullname" . }}-secrets
+  restartPolicy: Never
