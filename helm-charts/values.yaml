@@ -61,7 +61,7 @@ mysql:
 
   rootPassword: dbpassword
 
-  serviceFQDN: "kbe-brewery-beer-micro-service-beer-micro-service-mysql.kbe-brewery-beer-micro-service.svc.cluster.local"
+  serviceFQDN: "kbe-brewery-beer-micro-service-mysql.kbe-brewery-beer-micro-service.svc.cluster.local"
 
 jms:
   enabled: true
@@ -76,7 +76,7 @@ jms:
   user: artemis
   password: simetraehcapa
 
-  serviceFQDN: "kbe-brewery-beer-micro-service-beer-micro-service-jms.kbe-brewery-beer-micro-service.svc.cluster.local"
+  serviceFQDN: "kbe-brewery-beer-micro-service-jms.kbe-brewery-beer-micro-service.svc.cluster.local"
 
 ingress:
   enabled: false

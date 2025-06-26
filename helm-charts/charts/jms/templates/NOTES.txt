@@ -1,11 +1,11 @@
 1. Get the application details:
 
-Application Name: {{ include "application-template.name" . }}
+Application Name: {{ include "jms.name" . }}
 Application Version: {{ .Chart.AppVersion }}
 Version: {{ .Chart.Version  }}
 
 FQDN of the service (inside the cluster):
-  {{ include "application-template.serviceFQDN" . }}
+  {{ include "jms.serviceFQDN" . }}
 
 {{- if .Values.ingress.enabled }}
 echo "Your application is exposed via Ingress. You can access it at:"
@@ -17,23 +17,23 @@ echo "Your application is exposed via Ingress. You can access it at:"
 
 {{- else if contains "NodePort" .Values.service.type }}
 echo "Your application is exposed via NodePort. Run the following commands:"
-export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "application-template.fullname" . }})
+export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "jms.fullname" . }})
 export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
 echo "  http://$NODE_IP:$NODE_PORT"
 
 {{- else if contains "LoadBalancer" .Values.service.type }}
 echo "Your application is exposed via LoadBalancer."
 echo "It may take a few minutes for the external IP to become available. You can watch the status with:"
-echo "  kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "application-template.fullname" . }}"
+echo "  kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "jms.fullname" . }}"
 echo ""
 echo "Once available, run:"
-export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "application-template.fullname" . }} --template "{{"{{ (index .status.loadBalancer.ingress 0).ip }}"}}")
+export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "jms.fullname" . }} --template "{{"{{ (index .status.loadBalancer.ingress 0).ip }}"}}")
 echo "  http://$SERVICE_IP:{{ .Values.service.port }}"
 
 {{- else if contains "ClusterIP" .Values.service.type }}
 echo "Your application is exposed via ClusterIP and is not externally accessible by default."
 echo "To access it locally, use port-forwarding:"
-export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "application-template.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "jms.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
 export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
 echo " kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT"
 echo "Then open:"
