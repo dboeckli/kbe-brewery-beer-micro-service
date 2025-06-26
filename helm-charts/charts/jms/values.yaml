@@ -15,3 +15,6 @@ service:
 
   user: artemis
   password: simetraehcapa
+
+ingress:
+  enabled: false

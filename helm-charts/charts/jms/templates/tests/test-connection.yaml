@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "beer-micro-service-jms.fullname" . }}-test-connection"
+  name: "{{ include "jms.fullname" . }}-test-connection"
   namespace: {{ .Values.global.namespace }}
   labels:
-    {{- include "beer-micro-service-jms.labels" . | nindent 4 }}
+    {{- include "jms.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test
 spec:
@@ -14,8 +14,8 @@ spec:
       command: [ '/bin/sh', '-c' ]
       args:
         - |
-          echo "### Testing Artemis JMS connection : {{ include "beer-micro-service-jms.fullname" . }}"
-          artemis queue stat --url tcp://{{ include "beer-micro-service-jms.fullname" . }}:{{ .Values.service.broker.port }} --user $ARTEMIS_USERNAME --password $ARTEMIS_PASSWORD --silent
+          echo "### Testing Artemis JMS connection : {{ include "jms.fullname" . }}"
+          /opt/activemq-artemis/bin/artemis queue stat --url tcp://{{ include "jms.fullname" . }}:{{ .Values.service.broker.port }} --user "${ARTEMIS_USER}" --password "${ARTEMIS_PASSWORD}" --silent
           if [ $? -eq 0 ]; then
             echo "Successfully connected to Artemis JMS broker"
           else
@@ -25,5 +25,5 @@ spec:
 
       envFrom:
         - secretRef:
-            name: {{ include "beer-micro-service-jms.fullname" . }}-secrets
+            name: {{ include "jms.fullname" . }}-secrets
   restartPolicy: Never

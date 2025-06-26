@@ -384,8 +384,7 @@ jobs:
 
     steps:
       - name: Trigger Deployment
-        #if: success() TODO: ENABLE THIS WHEN DEPLOYMENT ACTION IS SETUP
-        if: false
+        if: success()
         env:
           GH_TOKEN: ${{ secrets.TRIGGER_WORKFLOW_TOKEN }}
           BRANCH_MVN_VERSION: ${{needs.setup.outputs.BRANCH_MVN_VERSION}}

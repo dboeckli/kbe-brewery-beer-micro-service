@@ -22,6 +22,9 @@ spec:
         - name: wait-for-jms
           image: busybox:1.37.0
           command: [ 'sh', '-c', 'until nc -z {{ .Values.jms.serviceFQDN  }} {{ .Values.jms.broker.port }}; do echo "[busybox: wait-for-jms] waiting for jms"; sleep 2; done; echo "[busybox: wait-for-jms] jms is available"' ]
+        - name: wait-for-inventory-service
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.inventory.serviceFQDN  }} {{ .Values.sfg.inventory.port }}; do echo "[busybox: wait-for-inventory-service] waiting for inventory service"; sleep 2; done; echo "[busybox: wait-for-inventory-service] inventory service is available"' ]
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -39,6 +42,8 @@ spec:
               value: {{ .Values.jms.serviceFQDN | quote }}
             - name: SPRING_ARTEMIS_PORT
               value: {{ .Values.jms.broker.port | quote }}
+            - name: SFG_BREWERY_BEER_INVENTORY_SERVICE_HOST
+              value: "http://{{ .Values.sfg.inventory.serviceFQDN }}:{{ .Values.sfg.inventory.port }}"
           envFrom:
             - secretRef:
                 name: {{ include "application-template.fullname" . }}-spring-secrets
