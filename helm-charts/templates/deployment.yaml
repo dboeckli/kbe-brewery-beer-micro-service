@@ -19,6 +19,9 @@ spec:
         - name: wait-for-mysql
           image: busybox:1.37.0
           command: [ 'sh', '-c', 'until nc -z {{ .Values.mysql.serviceFQDN  }} {{ .Values.mysql.port }}; do echo "[busybox: wait-for-mysql] waiting for mysql"; sleep 2; done; echo "[busybox: wait-for-mysql] mysql is available"' ]
+        - name: wait-for-jms
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.jms.serviceFQDN  }} {{ .Values.jms.broker.port }}; do echo "[busybox: wait-for-jms] waiting for jms"; sleep 2; done; echo "[busybox: wait-for-jms] jms is available"' ]
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -26,31 +29,19 @@ spec:
           env:
             - name: JAVA_TIMEZONE
               value: "{{ .Values.global.timezone }}"
-
-            - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.spring.profiles.active | default "local" }}
-            - name: SPRING_LIQUIBASE_ENABLED
-              value: "false"
-            - name: SPRING_FLYWAY_ENABLED
-              value: "true"
-            - name: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_HIKARI_JDBC_URL
               value: jdbc:mysql://{{ .Values.mysql.serviceFQDN  }}:{{ .Values.mysql.port }}/{{ .Values.mysql.database }}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-
-            - name: SECURITY_AUTH_SERVER_HEALTH_URL
-              value: "http://{{ .Values.authServer.serviceFQDN }}:{{ .Values.authServer.port }}"
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
-              value: "http://{{ .Values.authServer.serviceFQDN }}:{{ .Values.authServer.port }}"
-
-
-            - name: SECURITY_AUTHORIZATION_URL_FOR_OPENAPI
-              value: "{{ .Values.externalAccess.protocol }}://{{ .Values.externalAccess.host}}:{{ .Values.authServer.nodePort }}/oauth2/auth"
-            - name: SECURITY_TOKEN_URL_FOR_OPENAPI
-              value: "{{ .Values.externalAccess.protocol }}://{{ .Values.externalAccess.host}}:{{ .Values.authServer.nodePort }}/oauth2/token"
-            - name: SECURITY_REFRESH_URL_FOR_OPENAPI
-              value: "{{ .Values.externalAccess.protocol }}://{{ .Values.externalAccess.host}}:{{ .Values.authServer.nodePort }}/oauth2/refresh-token"
+            - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+              value: update
+            - name: SPRING_ARTEMIS_BROKER_URL
+              value: "tcp://{{ .Values.jms.serviceFQDN }}:{{ .Values.jms.broker.port }}"
+            - name: SPRING_ARTEMIS_HOST
+              value: {{ .Values.jms.serviceFQDN | quote }}
+            - name: SPRING_ARTEMIS_PORT
+              value: {{ .Values.jms.broker.port | quote }}
           envFrom:
             - secretRef:
-                name: {{ include "application-template.fullname" . }}-spring-mysql-secrets
+                name: {{ include "application-template.fullname" . }}-spring-secrets
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}

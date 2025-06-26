@@ -26,12 +26,15 @@ spec:
             - secretRef:
                 name: {{ include "beer-micro-service-jms.fullname" . }}-secrets
           ports:
-            - name: jms
-              containerPort: {{ .Values.jms.port }}
+            - name: broker
+              containerPort: {{ .Values.service.broker.targetPort }}
+              protocol: TCP
+            - name: console
+              containerPort: {{ .Values.service.console.targetPort }}
               protocol: TCP
           readinessProbe:
             tcpSocket:
-              port: {{ .Values.jms.port }}
+              port: {{ .Values.service.broker.targetPort  }}
           livenessProbe:
             tcpSocket:
-              port: {{ .Values.jms.port }}
+              port: {{ .Values.service.broker.targetPort  }}
