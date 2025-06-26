@@ -6,7 +6,7 @@ version: @helm.chart.version@
 appVersion: @project.version@
 
 dependencies:
-  - name: beer-micro-service--mysql
+  - name: beer-micro-service-mysql
     version: @helm.chart.version@
     repository: file://charts/beer-micro-service-mysql
     condition: mysql.enabled
