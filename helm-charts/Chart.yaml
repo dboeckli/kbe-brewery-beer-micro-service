@@ -6,6 +6,10 @@ version: @helm.chart.version@
 appVersion: @project.version@
 
 dependencies:
+  - name: kbe-brewery-inventory-micro-service
+    version: "v0.0.13-SNAPSHOT"
+    repository: "oci://registry-1.docker.io/domboeckli"
+    alias: inventory-service
   - name: mysql
     version: @helm.chart.version@
     repository: file://charts/mysql
@@ -14,3 +18,4 @@ dependencies:
     version: @helm.chart.version@
     repository: file://charts/jms
     condition: jms.enabled
+

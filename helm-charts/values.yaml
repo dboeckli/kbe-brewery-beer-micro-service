@@ -78,10 +78,33 @@ jms:
 
   serviceFQDN: "kbe-brewery-beer-micro-service-jms.kbe-brewery-beer-micro-service.svc.cluster.local"
 
+sfg:
+  inventory:
+    serviceFQDN: "kbe-brewery-beer-micro-service-inventory-service.kbe-brewery-beer-micro-service.svc.cluster.local"
+    port: 8082
+
 ingress:
   enabled: false
 
 # Section for overriding values in subcharts.
+
+# this is the alias for kbe-brewery-inventory-micro-service. override does not work with the name of the service
+inventory-service:
+  jms:
+    enabled: false
+    serviceFQDN: "kbe-brewery-beer-micro-service-jms.kbe-brewery-beer-micro-service.svc.cluster.local"
+  mysql:
+    enabled: false
+    serviceFQDN: "kbe-brewery-beer-micro-service-mysql.kbe-brewery-beer-micro-service.svc.cluster.local"
+
+# this override does not work with the name of the service and has no effect on the service. use alias for this service (see above: inventory-service)
+kbe-brewery-inventory-micro-service:
+  jms:
+    enabled: false
+    serviceFQDN: "kbe-brewery-beer-micro-service-jms.kbe-brewery-beer-micro-service.svc.cluster.local"
+  mysql:
+    enabled: false
+    serviceFQDN: "kbe-brewery-beer-micro-service-mysql.kbe-brewery-beer-micro-service.svc.cluster.local"
 
 
 
