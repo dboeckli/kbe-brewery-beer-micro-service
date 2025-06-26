@@ -1,0 +1,14 @@
+global:
+  namespace: kbe-brewery-beer-micro-service
+
+mysql:
+  port: 3306
+  targetPort: 3306
+  nodePort: 30306
+  
+  database: "beerservice"
+
+  user: user
+  password: dbpassword
+
+  rootPassword: dbpassword

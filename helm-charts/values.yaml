@@ -1,0 +1,87 @@
+global:
+  timezone: Europe/Zurich
+  timezonePath: /etc/localtime
+  springDebug: false
+  namespace: kbe-brewery-beer-micro-service
+
+replicaCount: 1
+
+image:
+  repository: @docker.repo@/@project.artifactId@
+  tag: @project.version@
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 30080
+
+externalAccess:
+  host: "localhost"
+  protocol: "http"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+spring:
+  profiles:
+    active: mysql
+  oauth2ResourceServer:
+    issuerUri: ""
+
+probes:
+  startup:
+    failureThreshold: 30
+    periodSeconds: 10
+  readiness:
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+  liveness:
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+
+mysql:
+  enabled: true
+
+  database: beerservice
+
+  port: 3306
+  targetPort: 3306
+  nodePort: 30306
+
+  user: user
+  password: dbpassword
+
+  rootPassword: dbpassword
+
+  serviceFQDN: "kbe-brewery-beer-micro-service-beer-micro-service-mysql.kbe-brewery-beer-micro-service.svc.cluster.local"
+
+jms:
+  enabled: true
+
+  broker:
+    port: 61616
+    nodePort: 30616
+  console:
+    port: 8161
+    nodePort: 30161
+
+  user: artemis
+  password: simetraehcapa
+
+  serviceFQDN: "kbe-brewery-beer-micro-service-beer-micro-service-jms.kbe-brewery-beer-micro-service.svc.cluster.local"
+
+ingress:
+  enabled: false
+
+# Section for overriding values in subcharts.
+
+
+
