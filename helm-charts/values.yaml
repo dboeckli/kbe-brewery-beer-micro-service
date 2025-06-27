@@ -82,6 +82,9 @@ sfg:
   inventory:
     serviceFQDN: "kbe-brewery-beer-micro-service-inventory-service.kbe-brewery-beer-micro-service.svc.cluster.local"
     port: 8082
+  failover:
+    serviceFQDN: "kbe-brewery-beer-micro-service-inventory-failover.kbe-brewery-beer-micro-service.svc.cluster.local"
+    port: 8083
 
 ingress:
   enabled: false

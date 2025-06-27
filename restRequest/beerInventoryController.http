@@ -1,0 +1,2 @@
+###
+GET http://localhost:{{inventroy-service-port}}/api/v1/beer/{{beerId}}/inventory

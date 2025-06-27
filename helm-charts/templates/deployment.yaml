@@ -25,6 +25,9 @@ spec:
         - name: wait-for-inventory-service
           image: busybox:1.37.0
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.inventory.serviceFQDN  }} {{ .Values.sfg.inventory.port }}; do echo "[busybox: wait-for-inventory-service] waiting for inventory service"; sleep 2; done; echo "[busybox: wait-for-inventory-service] inventory service is available"' ]
+        - name: wait-for-inventory-service
+          image: busybox:1.37.0
+          command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.failover.serviceFQDN  }} {{ .Values.sfg.failover.port }}; do echo "[busybox: wait-for-failover-service] waiting for failover service"; sleep 2; done; echo "[busybox: wait-for-failover-service] failover service is available"' ]
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
