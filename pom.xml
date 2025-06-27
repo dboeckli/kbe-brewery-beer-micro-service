@@ -45,6 +45,9 @@
         <docker.image.tag>development</docker.image.tag> <!-- for feature branches -->
         <docker.repo>local</docker.repo>
 
+        <!-- our dependencies -->
+        <kbe-brewery-lib.version>0.0.1-SNAPSHOT</kbe-brewery-lib.version>
+
         <logbook.version>3.12.1</logbook.version>
         <logstash-logback.version>8.1</logstash-logback.version>
         <editorconfig-maven-plugin.version>0.1.3</editorconfig-maven-plugin.version>
@@ -155,7 +158,7 @@
         <dependency>
             <groupId>ch.dboeckli.springframeworkguru.kbe.lib</groupId>
             <artifactId>kbe-brewery-lib</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${kbe-brewery-lib.version}</version>
         </dependency>
         
         <dependency>
