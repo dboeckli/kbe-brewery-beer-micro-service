@@ -1,11 +1,13 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.test.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.ClassDescriptor;
 import org.junit.jupiter.api.ClassOrderer;
 import org.junit.jupiter.api.ClassOrdererContext;
 
 import java.util.Comparator;
 
+@Slf4j
 public class TestClassOrderer implements ClassOrderer {
     private static final String THIS_PACKAGE = TestClassOrderer.class.getPackageName();
 
@@ -26,7 +28,8 @@ public class TestClassOrderer implements ClassOrderer {
         } else if (className.endsWith("IT")) {
             return 2;
        } else {
-            throw new IllegalArgumentException("Test class " + className + " does not end with 'Test', 'IT'");
+            log.info("Test class {} does not end with 'Test', 'IT'", className);
+            return 0;
         }
     }
 }
