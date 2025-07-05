@@ -40,6 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BeerController.class)
 @ActiveProfiles("test")
 class BeerControllerTest {
+    
+    private static final String API_V1_BEER_BASE = "/api/v1/beer";
 
     public static final String GALAXY_CAT = "Galaxy Cat";
     public static final String OAC_SPEC = "https://raw.githubusercontent.com/sfg-beer-works/brewery-api/master/spec/openapi.yaml";
@@ -129,7 +131,7 @@ class BeerControllerTest {
         @DisplayName("Test No Params")
         @Test
         void testNoParams() throws Exception {
-            mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON))
+            mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.content", hasSize(2)))
@@ -143,7 +145,7 @@ class BeerControllerTest {
         @DisplayName("Test Page Size Param")
         @Test
         void testPageSizeParam() throws Exception {
-            mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON)
+            mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("pageSize", "200"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -158,7 +160,7 @@ class BeerControllerTest {
         @DisplayName("Test Page Param")
         @Test
         void testPageParam() throws Exception {
-            mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON)
+            mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("pageSize", "200"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -173,7 +175,7 @@ class BeerControllerTest {
         @DisplayName("Test Beer Name Param")
         @Test
         void testBeerNameParam() throws Exception {
-            mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON)
+            mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("beerName", GALAXY_CAT))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -189,7 +191,7 @@ class BeerControllerTest {
         @DisplayName("Test Beer Style Param")
         @Test
         void testBeerStyle() throws Exception {
-            mockMvc.perform(get("/api/v1/beer").accept(MediaType.APPLICATION_JSON)
+            mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("beerStyle", "IPA"))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -231,7 +233,7 @@ class BeerControllerTest {
 
             given(beerService.saveBeer(any())).willReturn(savedDto);
 
-            mockMvc.perform(post("/api/v1/beer")
+            mockMvc.perform(post(API_V1_BEER_BASE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
                     .andExpect(status().isCreated());
@@ -249,7 +251,7 @@ class BeerControllerTest {
 
             given(beerService.saveBeer(any())).willReturn(savedDto);
 
-            mockMvc.perform(post("/api/v1/beer")
+            mockMvc.perform(post(API_V1_BEER_BASE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
                     .andExpect(status().isBadRequest());
@@ -269,7 +271,7 @@ class BeerControllerTest {
             String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
             //when
-            mockMvc.perform(put("/api/v1/beer/" +  UUID.randomUUID())
+            mockMvc.perform(put(API_V1_BEER_BASE + "/" +  UUID.randomUUID())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
                     .andExpect(status().isNoContent());
@@ -285,7 +287,7 @@ class BeerControllerTest {
             String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
             //when
-            mockMvc.perform(put("/api/v1/beer/" + validBeer.getId())
+            mockMvc.perform(put(API_V1_BEER_BASE + "/" + validBeer.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
                     .andExpect(status().isBadRequest());
