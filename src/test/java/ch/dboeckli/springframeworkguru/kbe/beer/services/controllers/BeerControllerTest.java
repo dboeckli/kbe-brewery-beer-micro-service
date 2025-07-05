@@ -211,7 +211,7 @@ class BeerControllerTest {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
         given(beerService.findBeerById(any(UUID.class), anyBoolean())).willReturn(validReturnBeer);
 
-        mockMvc.perform(get("/api/v1/beer/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(API_V1_BEER_BASE + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.beerName", is("Beer1")))
