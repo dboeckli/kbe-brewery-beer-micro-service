@@ -39,7 +39,7 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
     @Override
     public Integer getOnhandInventory(UUID beerId) {
 
-        log.debug("Calling Inventory Service - BeerId: " + beerId);
+        log.info("Calling Inventory Service - BeerId: " + beerId);
 
         ResponseEntity<List<BeerInventoryDto>> responseEntity = restTemplate
                 .exchange(beerInventoryServiceHost + INVENTORY_PATH, HttpMethod.GET, null,
@@ -51,7 +51,7 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
                 .mapToInt(BeerInventoryDto::getQuantityOnHand)
                 .sum();
 
-        log.debug("BeerId: " + beerId + " On hand is: " + onHand);
+        log.info("BeerId: " + beerId + " On hand is: " + onHand);
 
         return onHand;
     }

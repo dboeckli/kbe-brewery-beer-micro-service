@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static ch.dboeckli.springframeworkguru.kbe.beer.services.config.JmsConfig.BREWING_REQUEST_QUEUE;
+
 /**
  * Created by jt on 2019-06-23.
  */
@@ -28,20 +30,24 @@ public class BrewingServiceImpl implements BrewingService {
     private final JmsTemplate jmsTemplate;
     private final BeerMapper beerMapper;
 
+    private final int SCHEDULE_CHECK_INTERVAL = 5000; // in milliseconds
+
     @Override
     @Transactional
-    @Scheduled(fixedRate = 5000) //run every 5 seconds
+    @Scheduled(fixedRate = SCHEDULE_CHECK_INTERVAL) //run every 5 seconds
     public void checkForLowInventory() {
-        log.debug("Checking Beer Inventory");
+        log.info("Checking Beer Inventory every {} seconds", SCHEDULE_CHECK_INTERVAL);
 
         List<Beer> beers = beerRepository.findAll();
 
         beers.forEach(beer -> {
 
-            Integer invQoh = beerInventoryService.getOnhandInventory(beer.getId());
+            Integer onhandInventoryAmount = beerInventoryService.getOnhandInventory(beer.getId());
 
-            if(beer.getMinOnHand() >= invQoh ) {
-                jmsTemplate.convertAndSend(JmsConfig.BREWING_REQUEST_QUEUE,
+            if(beer.getMinOnHand() >= onhandInventoryAmount ) {
+                log.info("Current inventory amount  {} for beer {} is lower than minimum {}. Sending Event {}",
+                    onhandInventoryAmount, beer.getBeerName(), beer.getMinOnHand(), BREWING_REQUEST_QUEUE);
+                jmsTemplate.convertAndSend(BREWING_REQUEST_QUEUE,
                         new BrewBeerEvent(beerMapper.beerToBeerDto(beer)));
             }
         });

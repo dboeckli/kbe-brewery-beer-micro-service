@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="BeerServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="kbe-brewery-beer-micro-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="ch.dboeckli.springframeworkguru.kbe.beer.services.BeerServiceApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
