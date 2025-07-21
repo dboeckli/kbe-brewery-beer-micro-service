@@ -34,7 +34,7 @@ spec:
           command: [ 'sh', '-c', 'until nc -z {{ .Values.sfg.failover.serviceFQDN  }} {{ .Values.sfg.failover.port }}; do echo "[busybox: wait-for-failover-service] waiting for failover service"; sleep 2; done; echo "[busybox: wait-for-failover-service] failover service is available"' ]
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.registry }}/{{ .Chart.Name }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.registry }}/@project.artifactId@:{{ .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: JAVA_TIMEZONE

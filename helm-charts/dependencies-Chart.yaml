@@ -13,7 +13,7 @@ dependencies:
     alias: inventory-service
     condition: inventoryService.enabled
   - name: kbe-brewery-inventory-failover
-    version: "v0.0.1-SNAPSHOT"
+    version: "v0.0.2-SNAPSHOT"
     repository: "oci://registry-1.docker.io/domboeckli"
     alias: inventory-failover
     condition: inventoryFailover.enabled

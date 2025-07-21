@@ -11,6 +11,7 @@ dependencies:
     version: @helm.chart.version@
     repository: file://charts/mysql
     condition: mysql.enabled
+
   - name: kbe-brewery-beer-micro-service-jms
     alias: jms
     version: @helm.chart.version@
