@@ -13,9 +13,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Created by jt on 2019-06-24.
- */
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -26,7 +23,7 @@ public class BrewBeerListener {
 
     @Transactional
     @JmsListener(destination = JmsConfig.BREWING_REQUEST_QUEUE)
-    public void listen(BrewBeerEvent brewBeerEvent){
+    public void listen(BrewBeerEvent brewBeerEvent) {
         log.info("Received Brew Beer Request for beer: {}", brewBeerEvent.getBeerDto());
         BeerDto dto = brewBeerEvent.getBeerDto();
 

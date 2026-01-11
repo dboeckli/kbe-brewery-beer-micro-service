@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Created by jt on 3/4/20.
- */
 @Slf4j
 @RequiredArgsConstructor
 @Profile({"local-discovery", "digitalocean"})
@@ -34,9 +31,9 @@ public class BeerInventoryServiceFeign implements BeerInventoryService {
                 log.info("Inventory found, summing inventory");
 
                 onHand = Objects.requireNonNull(responseEntity.getBody())
-                        .stream()
-                        .mapToInt(BeerInventoryDto::getQuantityOnHand)
-                        .sum();
+                    .stream()
+                    .mapToInt(BeerInventoryDto::getQuantityOnHand)
+                    .sum();
             }
         } catch (Exception e) {
             log.error("Exception thrown calling inventory service", e);

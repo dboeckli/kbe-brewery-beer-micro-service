@@ -6,9 +6,6 @@ import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-/**
- * Created by jt on 2019-06-08.
- */
 public abstract class BeerMapperDecorator implements BeerMapper {
     private BeerInventoryService beerInventoryService;
     private BeerMapper mapper;

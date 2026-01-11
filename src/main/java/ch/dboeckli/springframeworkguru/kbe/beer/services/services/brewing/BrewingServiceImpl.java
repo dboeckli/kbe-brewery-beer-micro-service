@@ -1,6 +1,5 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.services.brewing;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.config.JmsConfig;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
@@ -17,9 +16,6 @@ import java.util.List;
 
 import static ch.dboeckli.springframeworkguru.kbe.beer.services.config.JmsConfig.BREWING_REQUEST_QUEUE;
 
-/**
- * Created by jt on 2019-06-23.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -44,11 +40,11 @@ public class BrewingServiceImpl implements BrewingService {
 
             Integer onhandInventoryAmount = beerInventoryService.getOnhandInventory(beer.getId());
 
-            if(beer.getMinOnHand() >= onhandInventoryAmount ) {
+            if (beer.getMinOnHand() >= onhandInventoryAmount) {
                 log.info("Current inventory amount  {} for beer {} is lower than minimum {}. Sending Event {}",
                     onhandInventoryAmount, beer.getBeerName(), beer.getMinOnHand(), BREWING_REQUEST_QUEUE);
                 jmsTemplate.convertAndSend(BREWING_REQUEST_QUEUE,
-                        new BrewBeerEvent(beerMapper.beerToBeerDto(beer)));
+                    new BrewBeerEvent(beerMapper.beerToBeerDto(beer)));
             }
         });
     }

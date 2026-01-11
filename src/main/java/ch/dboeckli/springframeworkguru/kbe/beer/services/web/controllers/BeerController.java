@@ -46,12 +46,12 @@ public class BeerController {
 
     private final BeerService beerService;
 
-    @GetMapping(produces = { "application/json" }, path = "beer")
+    @GetMapping(produces = {"application/json"}, path = "beer")
     public ResponseEntity<BeerPagedList> listBeers(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                                                    @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                                    @RequestParam(value = "beerName", required = false) String beerName,
                                                    @RequestParam(value = "beerStyle", required = false) BeerStyleEnum beerStyle,
-                                                   @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand){
+                                                   @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
 
         log.info("Listing Beers");
 
@@ -59,7 +59,7 @@ public class BeerController {
             showInventoryOnHand = false;
         }
 
-        if (pageNumber == null || pageNumber < 0){
+        if (pageNumber == null || pageNumber < 0) {
             pageNumber = DEFAULT_PAGE_NUMBER;
         }
 
@@ -72,9 +72,9 @@ public class BeerController {
         return new ResponseEntity<>(beerList, HttpStatus.OK);
     }
 
-    @GetMapping(path = {"beer/{beerId}"}, produces = { "application/json" })
-    public ResponseEntity<BeerDto>  getBeerById(@PathVariable("beerId") UUID beerId,
-                                                @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand){
+    @GetMapping(path = {"beer/{beerId}"}, produces = {"application/json"})
+    public ResponseEntity<BeerDto> getBeerById(@PathVariable("beerId") UUID beerId,
+                                               @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
 
         log.debug("Get Request for BeerId: " + beerId);
 
@@ -85,13 +85,13 @@ public class BeerController {
         return new ResponseEntity<>(beerService.findBeerById(beerId, showInventoryOnHand), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"beerUpc/{upc}"}, produces = { "application/json" })
-    public ResponseEntity<BeerDto>  getBeerByUpc(@PathVariable("upc") String upc){
+    @GetMapping(path = {"beerUpc/{upc}"}, produces = {"application/json"})
+    public ResponseEntity<BeerDto> getBeerByUpc(@PathVariable("upc") String upc) {
         return new ResponseEntity<>(beerService.findBeerByUpc(upc), HttpStatus.OK);
     }
 
     @PostMapping(path = "beer")
-    public ResponseEntity saveNewBeer(@Valid @RequestBody BeerDto beerDto){
+    public ResponseEntity saveNewBeer(@Valid @RequestBody BeerDto beerDto) {
 
         BeerDto savedDto = beerService.saveBeer(beerDto);
 
@@ -103,8 +103,8 @@ public class BeerController {
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
-    @PutMapping(path = {"beer/{beerId}"}, produces = { "application/json" })
-    public ResponseEntity updateBeer(@PathVariable("beerId") UUID beerId, @Valid @RequestBody BeerDto beerDto){
+    @PutMapping(path = {"beer/{beerId}"}, produces = {"application/json"})
+    public ResponseEntity updateBeer(@PathVariable("beerId") UUID beerId, @Valid @RequestBody BeerDto beerDto) {
 
         beerService.updateBeer(beerId, beerDto);
 
@@ -113,13 +113,13 @@ public class BeerController {
 
     @DeleteMapping({"beer/{beerId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteBeer(@PathVariable("beerId") UUID beerId){
+    public void deleteBeer(@PathVariable("beerId") UUID beerId) {
         beerService.deleteById(beerId);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<List> badReqeustHandler(ConstraintViolationException e){
+    ResponseEntity<List> badReqeustHandler(ConstraintViolationException e) {
         List<String> errors = new ArrayList<>(e.getConstraintViolations().size());
 
         e.getConstraintViolations().forEach(constraintViolation -> errors.add(constraintViolation.getPropertyPath().toString() + " : " + constraintViolation.getMessage()));

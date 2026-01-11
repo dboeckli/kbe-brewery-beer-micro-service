@@ -4,7 +4,7 @@ server:
 spring:
   application:
     name: kbe-brewery-beer-micro-service
-    
+
   docker:
     compose:
       enabled: true
@@ -22,16 +22,16 @@ spring:
 
   zipkin:
     enabled: true
-    
+
   cloud:
     discovery:
       enabled: false
-      
+
   artemis:
     user: artemis
     password: simetraehcapa
     broker-url: tcp://localhost:61616
-    
+
   datasource:
     hikari:
       jdbc-url: jdbc:mysql://localhost:3306/beerservice?useUnicode=yes&characterEncoding=UTF-8
@@ -49,11 +49,11 @@ spring:
         show_sql: false
         # Format SQL
         format_sql: true
-        
+
   data:
     jpa:
       repositories:
-        bootstrap-mode: default      
+        bootstrap-mode: default
 
 management:
   health:
@@ -62,35 +62,69 @@ management:
     livenessstate:
       enabled: true
   endpoints:
+    access:
+      default: unrestricted
     web:
       exposure:
         include: "*"
   endpoint:
+    configprops:
+      # WARNING: SECURITY RISK - DO NOT USE IN PRODUCTION ENVIRONMENT
+      # This configuration exposes sensitive data and should only be used for development or testing purposes.
+      # Ensure this is disabled in any environment where security is a concern.
+      show-values: ALWAYS
     health:
       probes:
         enabled: true
       show-details: always
+  info:
+    build:
+      enabled: true
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+    git:
+      enabled: true
+      mode: full
+  httpexchanges:
+    recording:
+      enabled: true
+      include: request_headers, response_headers, session_id, time_taken
+  observations:
+    annotations:
+      enabled: true
+    http:
+      server:
+        requests:
+          name: http.server.requests
+      client:
+        requests:
+          name: http-client-requests
 
-logging:
-  level:
-    org.zalando.logbook: TRACE
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    export:
+      otlp:
+        enabled: false
+    sampling:
+      probability: 1.0
 
-logbook:
-  filter:
-    enabled: true
-  format:
-    style: http
-  obfuscate:
-    headers:
-      - Authorization
-      - X-Secret
-    parameters:
-      - access_token
-      - password
-  predicate:
-    exclude:
-      - path: /actuator/health
-        
+  logging:
+    export:
+      enabled: false
+      otlp:
+        enabled: false
+  simple:
+    metrics:
+      export:
+        enabled: false
+
 sfg:
   brewery:
     beer-inventory-service-host: http://localhost:8082

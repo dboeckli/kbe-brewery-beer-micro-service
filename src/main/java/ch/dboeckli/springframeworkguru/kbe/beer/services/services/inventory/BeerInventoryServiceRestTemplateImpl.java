@@ -3,7 +3,7 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 import ch.guru.springframework.kbe.lib.dto.BeerInventoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Created by jt on 2019-06-07.
- */
 @Profile("!local-discovery & !digitalocean")
 @Slf4j
 @Component
@@ -28,7 +25,7 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
 
     private final String beerInventoryServiceHost;
 
-    public BeerInventoryServiceRestTemplateImpl(RestTemplateBuilder restTemplateBuilder, 
+    public BeerInventoryServiceRestTemplateImpl(RestTemplateBuilder restTemplateBuilder,
                                                 @Value("${sfg.brewery.inventory-user}") String inventoryUser,
                                                 @Value("${sfg.brewery.inventory-password}") String inventoryPassword,
                                                 @Value("${sfg.brewery.beer-inventory-service-host}") String beerInventoryServiceHost) {
@@ -42,14 +39,14 @@ public class BeerInventoryServiceRestTemplateImpl implements BeerInventoryServic
         log.info("Calling Inventory Service - BeerId: " + beerId);
 
         ResponseEntity<List<BeerInventoryDto>> responseEntity = restTemplate
-                .exchange(beerInventoryServiceHost + INVENTORY_PATH, HttpMethod.GET, null,
-                    new ParameterizedTypeReference<>() {
-                    }, beerId);
+            .exchange(beerInventoryServiceHost + INVENTORY_PATH, HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                }, beerId);
 
         Integer onHand = Objects.requireNonNull(responseEntity.getBody())
-                .stream()
-                .mapToInt(BeerInventoryDto::getQuantityOnHand)
-                .sum();
+            .stream()
+            .mapToInt(BeerInventoryDto::getQuantityOnHand)
+            .sum();
 
         log.info("BeerId: " + beerId + " On hand is: " + onHand);
 
