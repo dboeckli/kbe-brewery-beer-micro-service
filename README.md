@@ -11,7 +11,7 @@ Original git repository: https://github.com/springframeworkguru/kbe-sb-microserv
 
 ### Deployment with Kubernetes
 
-To run maven filtering for destination target/k8s
+To run maven filtering for destination target/k8s.
 ```bash
 mvn clean install -DskipTests 
 ```
