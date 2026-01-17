@@ -9,6 +9,7 @@ import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.PageRequest;
@@ -54,13 +55,24 @@ class BeerControllerTest {
     ObjectMapper objectMapper;
 
     @Captor
-    ArgumentCaptor<UUID> uuidArgumentCaptor;
+    ArgumentCaptor<String> beerNameCaptor;
+
+    @Captor
+    ArgumentCaptor<BeerStyleEnum> beerStyleEnumCaptor;
+
+    @Captor
+    ArgumentCaptor<PageRequest> pageRequestCaptor;
+
+    @Captor
+    ArgumentCaptor<Boolean> showInventoryCaptor;
 
     BeerDto validBeer;
     BeerDto validReturnBeer;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         validBeer = BeerDto.builder()
             .beerName("Beer1")
             .beerStyle(BeerStyleEnum.PALE_ALE)
@@ -106,22 +118,12 @@ class BeerControllerTest {
     @Nested
     class TestListOperations {
 
-        @Captor
-        ArgumentCaptor<String> beerNameCaptor;
-
-        @Captor
-        ArgumentCaptor<BeerStyleEnum> beerStyleEnumCaptor;
-
-        @Captor
-        ArgumentCaptor<PageRequest> pageRequestCaptor;
-
-        @Captor
-        ArgumentCaptor<Boolean> showInventoryCaptor;
-
         BeerPagedList beerPagedList;
 
         @BeforeEach
         void setUp() {
+            MockitoAnnotations.openMocks(this);
+
             List<BeerDto> beers = new ArrayList<>();
             beers.add(validBeer);
             beers.add(BeerDto.builder().id(UUID.randomUUID())

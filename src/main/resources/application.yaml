@@ -15,13 +15,6 @@ spring:
     jcache:
       config: classpath:ehcache.xml
 
-  zipkin:
-    enabled: true
-
-  cloud:
-    discovery:
-      enabled: false
-
   artemis:
     user: artemis
     password: simetraehcapa
@@ -46,6 +39,10 @@ spring:
         format_sql: true
 
   data:
+    web:
+      pageable:
+        default-page-size: 25
+        max-page-size: 100
     jpa:
       repositories:
         bootstrap-mode: default
@@ -123,11 +120,6 @@ management:
 sfg:
   brewery:
     beer-inventory-service-host: http://localhost:8082
+    inventory-failover-service-host: http://localhost:8083
     inventory-user: good
     inventory-password: beer
-
-feign:
-  client:
-    config:
-      default:
-        logger-level: full        
