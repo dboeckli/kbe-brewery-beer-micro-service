@@ -1,4 +1,4 @@
-package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
+package ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
@@ -40,115 +40,12 @@ import static org.mockito.BDDMockito.then;
 @SpringJUnitConfig(classes = {BeerServiceImplTest.BeerServiceConfig.class})
 class BeerServiceImplTest {
 
-    @Configuration
-    static class BeerServiceConfig {
-
-        @Bean
-        DateMapper dateMapper() {
-            return new DateMapper();
-        }
-
-        @Bean
-        @Primary
-        BeerMapper beerMapper() {
-            return new BeerMapperImpl();
-        }
-
-        @Bean
-        @Qualifier("delegate")
-        BeerMapper beerMapperImpl() {
-            return new BeerMapperImpl_();
-        }
-
-        @Bean("beerService")
-        BeerServiceImpl beerService(BeerRepository beerRepository, BeerMapper mapper) {
-            return new BeerServiceImpl(beerRepository, mapper);
-        }
-    }
-
     @MockitoBean
     BeerRepository beerRepository;
-
     @MockitoBean
     BeerInventoryService beerInventoryService;
-
     @Autowired
     BeerServiceImpl beerService;
-
-    @DisplayName("List Ops - ")
-    @Nested
-    class TestListOptions {
-        private List<Beer> beerList;
-        private PageImpl<Beer> beerPage;
-
-        @BeforeEach
-        void setUp() {
-            beerList = new ArrayList<>();
-            List<Beer> beerList = new ArrayList<>();
-            beerList.add(Beer.builder().id(UUID.randomUUID()).build());
-            beerList.add(Beer.builder().id(UUID.randomUUID()).build());
-            beerPage = new PageImpl<>(beerList, PageRequest.of(1, 25), 2);
-
-            given(beerInventoryService.getOnhandInventory(any())).willReturn(1);
-        }
-
-        @DisplayName("Test Find By Name and Style")
-        @Test
-        void listBeersTestFindByNameAndStyle() {
-            //given
-            given(beerRepository.findAllByBeerNameAndBeerStyle(anyString(), any(BeerStyleEnum.class),
-                    any(PageRequest.class))).willReturn(beerPage);
-
-            //when
-            BeerPagedList beerPagedList = beerService.listBeers("uuum IPA beer_service", BeerStyleEnum.IPA,
-                    PageRequest.of(1, 25), false);
-
-            //then
-            assertThat(2).isEqualTo(beerPagedList.getContent().size());
-        }
-
-        @DisplayName("Test Find By Name Only")
-        @Test
-        void listBeersTestFindByNameOnly() {
-            //given
-            given(beerRepository.findAllByBeerName(anyString(), any(PageRequest.class))).willReturn(beerPage);
-
-            //when
-            BeerPagedList beerPagedList = beerService.listBeers("uuum IPA beer_service", null,
-                    PageRequest.of(1, 25), false);
-
-            //then
-            assertThat(2).isEqualTo(beerPagedList.getContent().size());
-        }
-
-        @DisplayName("Test Find By Style Only")
-        @Test
-        void listBeersTestFindByStyleOnly() {
-            //given
-            given(beerRepository.findAllByBeerStyle(any(BeerStyleEnum.class), any(PageRequest.class))).willReturn(beerPage);
-
-            //when
-            BeerPagedList beerPagedList = beerService.listBeers(null, BeerStyleEnum.IPA,
-                    PageRequest.of(1, 25), false);
-
-            //then
-            assertThat(2).isEqualTo(beerPagedList.getContent().size());
-        }
-
-        @DisplayName("Test Find All")
-        @Test
-        void listBeersTestFindAll() {
-            //given
-            given(beerRepository.findAll(any(PageRequest.class))).willReturn(beerPage);
-
-            //when
-            BeerPagedList beerPagedList = beerService.listBeers(null, null,
-                    PageRequest.of(1, 25), false);
-
-            //then
-            assertThat(2).isEqualTo(beerPagedList.getContent().size());
-        }
-    }
 
     @DisplayName("Find By UUID")
     @Test
@@ -196,5 +93,106 @@ class BeerServiceImplTest {
         beerService.updateBeer(updated.getId(), beerDto);
 
         then(beerRepository).should().save(any());
+    }
+
+    @Configuration
+    static class BeerServiceConfig {
+
+        @Bean
+        DateMapper dateMapper() {
+            return new DateMapper();
+        }
+
+        @Bean
+        @Primary
+        BeerMapper beerMapper() {
+            return new BeerMapperImpl();
+        }
+
+        @Bean
+        @Qualifier("delegate")
+        BeerMapper beerMapperImpl() {
+            return new BeerMapperImpl_();
+        }
+
+        @Bean("beerService")
+        BeerServiceImpl beerService(BeerRepository beerRepository, BeerMapper mapper) {
+            return new BeerServiceImpl(beerRepository, mapper);
+        }
+    }
+
+    @DisplayName("List Ops - ")
+    @Nested
+    class TestListOptions {
+        private List<Beer> beerList;
+        private PageImpl<Beer> beerPage;
+
+        @BeforeEach
+        void setUp() {
+            beerList = new ArrayList<>();
+            List<Beer> beerList = new ArrayList<>();
+            beerList.add(Beer.builder().id(UUID.randomUUID()).build());
+            beerList.add(Beer.builder().id(UUID.randomUUID()).build());
+            beerPage = new PageImpl<>(beerList, PageRequest.of(1, 25), 2);
+
+            given(beerInventoryService.getOnhandInventory(any())).willReturn(1);
+        }
+
+        @DisplayName("Test Find By Name and Style")
+        @Test
+        void listBeersTestFindByNameAndStyle() {
+            //given
+            given(beerRepository.findAllByBeerNameAndBeerStyle(anyString(), any(BeerStyleEnum.class),
+                any(PageRequest.class))).willReturn(beerPage);
+
+            //when
+            BeerPagedList beerPagedList = beerService.listBeers("uuum IPA beer_service", BeerStyleEnum.IPA,
+                PageRequest.of(1, 25), false);
+
+            //then
+            assertThat(2).isEqualTo(beerPagedList.getContent().size());
+        }
+
+        @DisplayName("Test Find By Name Only")
+        @Test
+        void listBeersTestFindByNameOnly() {
+            //given
+            given(beerRepository.findAllByBeerName(anyString(), any(PageRequest.class))).willReturn(beerPage);
+
+            //when
+            BeerPagedList beerPagedList = beerService.listBeers("uuum IPA beer_service", null,
+                PageRequest.of(1, 25), false);
+
+            //then
+            assertThat(2).isEqualTo(beerPagedList.getContent().size());
+        }
+
+        @DisplayName("Test Find By Style Only")
+        @Test
+        void listBeersTestFindByStyleOnly() {
+            //given
+            given(beerRepository.findAllByBeerStyle(any(BeerStyleEnum.class), any(PageRequest.class))).willReturn(beerPage);
+
+            //when
+            BeerPagedList beerPagedList = beerService.listBeers(null, BeerStyleEnum.IPA,
+                PageRequest.of(1, 25), false);
+
+            //then
+            assertThat(2).isEqualTo(beerPagedList.getContent().size());
+        }
+
+        @DisplayName("Test Find All")
+        @Test
+        void listBeersTestFindAll() {
+            //given
+            given(beerRepository.findAll(any(PageRequest.class))).willReturn(beerPage);
+
+            //when
+            BeerPagedList beerPagedList = beerService.listBeers(null, null,
+                PageRequest.of(1, 25), false);
+
+            //then
+            assertThat(2).isEqualTo(beerPagedList.getContent().size());
+        }
     }
 }

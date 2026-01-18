@@ -20,6 +20,7 @@ import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Brewery;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BreweryRepository;
+import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerServiceImpl;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
-
-/**
- * Created by jt on 2019-01-26.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -58,10 +55,9 @@ public class DefaultBreweryLoader implements CommandLineRunner {
         loadBreweryData();
         loadBeerData();
 
-        cacheManager.getCache("beerListCache").clear();
+        cacheManager.getCache(BeerServiceImpl.CACHE_NAME).clear();
         log.info("Data Initialized. Beer Records loaded {}", beerRepository.count());
     }
-
 
 
     private void loadBeerData() {
@@ -70,92 +66,92 @@ public class DefaultBreweryLoader implements CommandLineRunner {
         beerRepository.flush();
 
         Beer mangoBobs = Beer.builder()
-                .beerName("Mango Bobs")
-                .beerStyle(BeerStyleEnum.IPA)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .quantityOnHand(500)
-                .upc(BEER_1_UPC)
-                .build();
+            .beerName("Mango Bobs")
+            .beerStyle(BeerStyleEnum.IPA)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .quantityOnHand(500)
+            .upc(BEER_1_UPC)
+            .build();
 
         beerRepository.save(mangoBobs);
 
         Beer galaxyCat = Beer.builder()
-                .beerName("Galaxy Cat")
-                .beerStyle(BeerStyleEnum.PALE_ALE)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_2_UPC)
-                .build();
+            .beerName("Galaxy Cat")
+            .beerStyle(BeerStyleEnum.PALE_ALE)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_2_UPC)
+            .build();
 
         beerRepository.save(galaxyCat);
 
         Beer pinball = Beer.builder()
-                .beerName("Pinball Porter")
-                .beerStyle(BeerStyleEnum.PORTER)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_3_UPC)
-                .build();
+            .beerName("Pinball Porter")
+            .beerStyle(BeerStyleEnum.PORTER)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_3_UPC)
+            .build();
 
         beerRepository.save(pinball);
 
         beerRepository.save(Beer.builder()
-                .beerName("Golden Buddha")
-                .beerStyle(BeerStyleEnum.IPA)
-                .minOnHand(12)
-                .quantityToBrew(300)
-                .upc(BEER_4_UPC)
-                .build());
+            .beerName("Golden Buddha")
+            .beerStyle(BeerStyleEnum.IPA)
+            .minOnHand(12)
+            .quantityToBrew(300)
+            .upc(BEER_4_UPC)
+            .build());
 
         beerRepository.save(Beer.builder()
-                .beerName("Cage Blond")
-                .beerStyle(BeerStyleEnum.ALE)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_5_UPC)
-                .build());
+            .beerName("Cage Blond")
+            .beerStyle(BeerStyleEnum.ALE)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_5_UPC)
+            .build());
 
         beerRepository.save(Beer.builder()
-                .beerName("Amarmillo IPA")
-                .beerStyle(BeerStyleEnum.IPA)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_6_UPC)
-                .build());
+            .beerName("Amarmillo IPA")
+            .beerStyle(BeerStyleEnum.IPA)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_6_UPC)
+            .build());
 
         beerRepository.save(Beer.builder()
-                .beerName("King Krush")
-                .beerStyle(BeerStyleEnum.IPA)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_7_UPC)
-                .build());
+            .beerName("King Krush")
+            .beerStyle(BeerStyleEnum.IPA)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_7_UPC)
+            .build());
 
         beerRepository.save(Beer.builder()
-                .beerName("Static IPA")
-                .beerStyle(BeerStyleEnum.IPA)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_8_UPC)
-                .build());
+            .beerName("Static IPA")
+            .beerStyle(BeerStyleEnum.IPA)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_8_UPC)
+            .build());
 
         beerRepository.saveAndFlush(Beer.builder()
-                .beerName("Grand Central")
-                .beerStyle(BeerStyleEnum.ALE)
-                .minOnHand(12)
-                .quantityToBrew(200)
-                .upc(BEER_9_UPC)
-                .build());
+            .beerName("Grand Central")
+            .beerStyle(BeerStyleEnum.ALE)
+            .minOnHand(12)
+            .quantityToBrew(200)
+            .upc(BEER_9_UPC)
+            .build());
 
     }
 
     private void loadBreweryData() {
         if (breweryRepository.count() == 0) {
             breweryRepository.save(Brewery
-                    .builder()
-                    .breweryName("Cage Brewing")
-                    .build());
+                .builder()
+                .breweryName("Cage Brewing")
+                .build());
         }
     }
 

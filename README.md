@@ -4,14 +4,14 @@ This project has a services of microservices for deployment via Docker Compose a
 See Gateway Project for Detailed description: 
 https://github.com/dboeckli/kbe-brewery-gateway/blob/master/README.md
 
-This project has been upgraded to spring boot 3.4.1 and not been tested!
+This project has been upgraded to spring boot 3.4.1.
 Original git repository: https://github.com/springframeworkguru/kbe-sb-microservices.git
 
 ## Deployment
 
 ### Deployment with Kubernetes
 
-To run maven filtering for destination target/k8s
+To run maven filtering for destination target/k8s.
 ```bash
 mvn clean install -DskipTests 
 ```

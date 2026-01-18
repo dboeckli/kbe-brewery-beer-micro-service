@@ -19,16 +19,16 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.domain;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-/**
- * Created by jt on 2019-01-26.
- */
 @Getter
 @Setter
 @Entity
@@ -53,19 +53,11 @@ public class Beer {
 
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
-
-    public boolean isNew() {
-        return this.id == null;
-    }
-
     private String beerName;
-
     @Enumerated(EnumType.STRING)
     private BeerStyleEnum beerStyle;
-
     @Column(unique = true)
     private String upc;
-
     private BigDecimal price;
     /**
      * Min on hand qty - used to trigger brew
@@ -73,5 +65,9 @@ public class Beer {
     private Integer minOnHand;
     private Integer quantityToBrew;
     private Integer quantityOnHand;
+
+    public boolean isNew() {
+        return this.id == null;
+    }
 
 }

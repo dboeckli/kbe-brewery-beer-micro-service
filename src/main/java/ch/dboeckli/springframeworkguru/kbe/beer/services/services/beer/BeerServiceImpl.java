@@ -15,7 +15,7 @@
  *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
+package ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
@@ -42,10 +42,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BeerServiceImpl implements BeerService {
 
+    public static final String CACHE_NAME = "beerListCache";
+
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
 
-    @Cacheable(cacheNames = "beerListCache", condition = "#showInventoryOnHand == false ")
+    @Cacheable(cacheNames = CACHE_NAME, condition = "#showInventoryOnHand == false ")
     @Override
     public BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand) {
 
@@ -69,25 +71,25 @@ public class BeerServiceImpl implements BeerService {
 
         if (showInventoryOnHand) {
             beerPagedList = new BeerPagedList(beerPage
-                    .getContent()
-                    .stream()
-                    .map(beerMapper::beerToBeerDtoWithInventory)
-                    .collect(Collectors.toList()),
-                    PageRequest
-                            .of(beerPage.getPageable().getPageNumber(),
-                                    beerPage.getPageable().getPageSize()),
-                    beerPage.getTotalElements());
+                .getContent()
+                .stream()
+                .map(beerMapper::beerToBeerDtoWithInventory)
+                .collect(Collectors.toList()),
+                PageRequest
+                    .of(beerPage.getPageable().getPageNumber(),
+                        beerPage.getPageable().getPageSize()),
+                beerPage.getTotalElements());
 
         } else {
             beerPagedList = new BeerPagedList(beerPage
-                    .getContent()
-                    .stream()
-                    .map(beerMapper::beerToBeerDto)
-                    .collect(Collectors.toList()),
-                    PageRequest
-                            .of(beerPage.getPageable().getPageNumber(),
-                                    beerPage.getPageable().getPageSize()),
-                    beerPage.getTotalElements());
+                .getContent()
+                .stream()
+                .map(beerMapper::beerToBeerDto)
+                .collect(Collectors.toList()),
+                PageRequest
+                    .of(beerPage.getPageable().getPageNumber(),
+                        beerPage.getPageable().getPageSize()),
+                beerPage.getTotalElements());
         }
         return beerPagedList;
     }
@@ -102,7 +104,7 @@ public class BeerServiceImpl implements BeerService {
 
         if (beerOptional.isPresent()) {
             log.debug("Found BeerId: " + beerId);
-            if(showInventoryOnHand) {
+            if (showInventoryOnHand) {
                 return beerMapper.beerToBeerDtoWithInventory(beerOptional.get());
             } else {
                 return beerMapper.beerToBeerDto(beerOptional.get());

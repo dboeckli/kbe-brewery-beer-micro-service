@@ -1,22 +1,23 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.controllers;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.bootstrap.DefaultBreweryLoader;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.services.BeerService;
+import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerService;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers.BeerController;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -40,12 +41,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BeerController.class)
 @ActiveProfiles("test")
 class BeerControllerTest {
-    
-    private static final String API_V1_BEER_BASE = "/api/v1/beer";
 
     public static final String GALAXY_CAT = "Galaxy Cat";
     public static final String OAC_SPEC = "https://raw.githubusercontent.com/sfg-beer-works/brewery-api/master/spec/openapi.yaml";
-
+    private static final String API_V1_BEER_BASE = "/api/v1/beer";
     @MockitoBean
     BeerService beerService;
 
@@ -56,32 +55,43 @@ class BeerControllerTest {
     ObjectMapper objectMapper;
 
     @Captor
-    ArgumentCaptor<UUID> uuidArgumentCaptor;
+    ArgumentCaptor<String> beerNameCaptor;
+
+    @Captor
+    ArgumentCaptor<BeerStyleEnum> beerStyleEnumCaptor;
+
+    @Captor
+    ArgumentCaptor<PageRequest> pageRequestCaptor;
+
+    @Captor
+    ArgumentCaptor<Boolean> showInventoryCaptor;
 
     BeerDto validBeer;
     BeerDto validReturnBeer;
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+
         validBeer = BeerDto.builder()
-                .beerName("Beer1")
-                .beerStyle(BeerStyleEnum.PALE_ALE)
-                .price(new BigDecimal("12.99"))
-                .quantityOnHand(4)
-                .upc(DefaultBreweryLoader.BEER_1_UPC)
-                .build();
+            .beerName("Beer1")
+            .beerStyle(BeerStyleEnum.PALE_ALE)
+            .price(new BigDecimal("12.99"))
+            .quantityOnHand(4)
+            .upc(DefaultBreweryLoader.BEER_1_UPC)
+            .build();
 
         validReturnBeer = BeerDto.builder()
-                .id(UUID.randomUUID())
-                .version(1)
-                .beerName("Beer1")
-                .beerStyle(BeerStyleEnum.PALE_ALE)
-                .price(new BigDecimal("12.99"))
-                .quantityOnHand(4)
-                .upc(DefaultBreweryLoader.BEER_1_UPC)
-                .createdDate(OffsetDateTime.now())
-                .lastModifiedDate(OffsetDateTime.now())
-                .build();
+            .id(UUID.randomUUID())
+            .version(1)
+            .beerName("Beer1")
+            .beerStyle(BeerStyleEnum.PALE_ALE)
+            .price(new BigDecimal("12.99"))
+            .quantityOnHand(4)
+            .upc(DefaultBreweryLoader.BEER_1_UPC)
+            .createdDate(OffsetDateTime.now())
+            .lastModifiedDate(OffsetDateTime.now())
+            .build();
     }
 
     @AfterEach
@@ -89,53 +99,58 @@ class BeerControllerTest {
         reset(beerService);
     }
 
+    @Test
+    void getBeerById() throws Exception {
+        //given
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+        given(beerService.findBeerById(any(UUID.class), anyBoolean())).willReturn(validReturnBeer);
+
+        mockMvc.perform(get(API_V1_BEER_BASE + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.beerName", is("Beer1")))
+            .andExpect(jsonPath("$.createdDate").isNotEmpty())
+            .andExpect(openApi().isValid(OAC_SPEC));
+
+    }
+
     @DisplayName("List Ops - ")
     @Nested
     class TestListOperations {
-
-        @Captor
-        ArgumentCaptor<String> beerNameCaptor;
-
-        @Captor
-        ArgumentCaptor<BeerStyleEnum> beerStyleEnumCaptor;
-
-        @Captor
-        ArgumentCaptor<PageRequest> pageRequestCaptor;
-
-        @Captor
-        ArgumentCaptor<Boolean> showInventoryCaptor;
 
         BeerPagedList beerPagedList;
 
         @BeforeEach
         void setUp() {
+            MockitoAnnotations.openMocks(this);
+
             List<BeerDto> beers = new ArrayList<>();
             beers.add(validBeer);
             beers.add(BeerDto.builder().id(UUID.randomUUID())
-                    .version(1)
-                    .beerName("Beer4")
-                    .upc(DefaultBreweryLoader.BEER_1_UPC)
-                    .beerStyle(BeerStyleEnum.PALE_ALE)
-                    .price(new BigDecimal("12.99"))
-                    .quantityOnHand(66)
-                    .createdDate(OffsetDateTime.now())
-                    .lastModifiedDate(OffsetDateTime.now())
-                    .build());
+                .version(1)
+                .beerName("Beer4")
+                .upc(DefaultBreweryLoader.BEER_1_UPC)
+                .beerStyle(BeerStyleEnum.PALE_ALE)
+                .price(new BigDecimal("12.99"))
+                .quantityOnHand(66)
+                .createdDate(OffsetDateTime.now())
+                .lastModifiedDate(OffsetDateTime.now())
+                .build());
 
             beerPagedList = new BeerPagedList(beers, PageRequest.of(1, 1), 2L);
 
             given(beerService.listBeers(beerNameCaptor.capture(), beerStyleEnumCaptor.capture(),
-                    pageRequestCaptor.capture(), showInventoryCaptor.capture())).willReturn(beerPagedList);
+                pageRequestCaptor.capture(), showInventoryCaptor.capture())).willReturn(beerPagedList);
         }
 
         @DisplayName("Test No Params")
         @Test
         void testNoParams() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)))
-                    .andExpect(openApi().isValid(OAC_SPEC));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -147,10 +162,10 @@ class BeerControllerTest {
         void testPageSizeParam() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("pageSize", "200"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)))
-                    .andExpect(openApi().isValid(OAC_SPEC));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -162,10 +177,10 @@ class BeerControllerTest {
         void testPageParam() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("pageSize", "200"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)))
-                    .andExpect(openApi().isValid(OAC_SPEC));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -177,10 +192,10 @@ class BeerControllerTest {
         void testBeerNameParam() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("beerName", GALAXY_CAT))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)))
-                    .andExpect(openApi().isValid(OAC_SPEC));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(anyString(), isNull(), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
@@ -193,31 +208,16 @@ class BeerControllerTest {
         void testBeerStyle() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
                     .param("beerStyle", "IPA"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.content", hasSize(2)))
-                    .andExpect(openApi().isValid(OAC_SPEC));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(openApi().isValid(OAC_SPEC));
 
             then(beerService).should().listBeers(isNull(), any(BeerStyleEnum.class), any(PageRequest.class), anyBoolean());
             assertThat(0).isEqualTo(pageRequestCaptor.getValue().getPageNumber());
             assertThat(25).isEqualTo(pageRequestCaptor.getValue().getPageSize());
             assertThat(BeerStyleEnum.IPA).isEqualTo(beerStyleEnumCaptor.getValue());
         }
-    }
-
-    @Test
-    void getBeerById() throws Exception {
-        //given
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-        given(beerService.findBeerById(any(UUID.class), anyBoolean())).willReturn(validReturnBeer);
-
-        mockMvc.perform(get(API_V1_BEER_BASE + "/" + UUID.randomUUID()).accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.beerName", is("Beer1")))
-                .andExpect(jsonPath("$.createdDate").isNotEmpty())
-                .andExpect(openApi().isValid(OAC_SPEC));
-
     }
 
     @DisplayName("Save Ops - ")
@@ -236,7 +236,7 @@ class BeerControllerTest {
             mockMvc.perform(post(API_V1_BEER_BASE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
-                    .andExpect(status().isCreated());
+                .andExpect(status().isCreated());
         }
 
         @Test
@@ -254,7 +254,7 @@ class BeerControllerTest {
             mockMvc.perform(post(API_V1_BEER_BASE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
-                    .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
             verifyNoInteractions(beerService);
         }
@@ -271,10 +271,10 @@ class BeerControllerTest {
             String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
             //when
-            mockMvc.perform(put(API_V1_BEER_BASE + "/" +  UUID.randomUUID())
+            mockMvc.perform(put(API_V1_BEER_BASE + "/" + UUID.randomUUID())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
-                    .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent());
 
             then(beerService).should().updateBeer(any(), any());
         }
@@ -290,7 +290,7 @@ class BeerControllerTest {
             mockMvc.perform(put(API_V1_BEER_BASE + "/" + validBeer.getId())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(beerDtoJson))
-                    .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest());
 
             verifyNoInteractions(beerService);
         }

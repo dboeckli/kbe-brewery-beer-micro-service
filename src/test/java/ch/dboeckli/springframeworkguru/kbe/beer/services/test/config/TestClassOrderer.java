@@ -9,27 +9,17 @@ import java.util.Comparator;
 
 @Slf4j
 public class TestClassOrderer implements ClassOrderer {
-    private static final String THIS_PACKAGE = TestClassOrderer.class.getPackageName();
+    private static int getOrder(ClassDescriptor classDescriptor) {
+        String className = classDescriptor.getTestClass().getSimpleName();
+        return switch (className) {
+            case String name when name.endsWith("IT") -> 2;
+            case String name when name.endsWith("Test") || name.endsWith("Tests") -> 1;
+            default -> Integer.MAX_VALUE;
+        };
+    }
 
     @Override
     public void orderClasses(ClassOrdererContext classOrdererContext) {
         classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(TestClassOrderer::getOrder));
-    }
-
-    private static int getOrder(ClassDescriptor classDescriptor) {
-        Class<?> testClass = classDescriptor.getTestClass();
-        String className = classDescriptor.getDisplayName();
-        if (testClass.getPackageName().equals(THIS_PACKAGE)) {
-            return 0;
-        }
-
-        if (className.endsWith("Test")) {
-            return 1;
-        } else if (className.endsWith("IT")) {
-            return 2;
-       } else {
-            log.info("Test class {} does not end with 'Test', 'IT'", className);
-            return 0;
-        }
     }
 }
