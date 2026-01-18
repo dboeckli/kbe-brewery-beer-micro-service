@@ -12,18 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
-@TestPropertySource(properties = {
+@SpringBootTest(properties = {
     "sfg.brewery.brewing-job-cron=-"
 })
 @Slf4j
@@ -38,15 +36,15 @@ public class BrewingServiceIT {
     @Autowired
     JmsTemplate jmsTemplate;
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     // Wir mocken den InventoryService, da wir keinen echten externen Service aufrufen wollen
     @MockitoBean
     BeerInventoryService beerInventoryService;
 
     @Value("${sfg.brewery.queues.brewing-request}")
     String brewingRequestQueue;
+
+    @Value("${sfg.brewery.brewing-job-cron}")
+    String cron;
 
     @MockitoBean
     BrewBeerListener brewBeerListener;
@@ -58,6 +56,8 @@ public class BrewingServiceIT {
 
     @Test
     void testBrewingEventFlow() throws Exception {
+        assertEquals("-", cron); // disabled
+
         Beer beer = Beer.builder()
             .beerName("Pilgrim")
             .beerStyle(BeerStyleEnum.IPA)
