@@ -20,6 +20,7 @@ import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Brewery;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BreweryRepository;
+import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerServiceImpl;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,7 @@ public class DefaultBreweryLoader implements CommandLineRunner {
         loadBreweryData();
         loadBeerData();
 
-        cacheManager.getCache("beerListCache").clear();
+        cacheManager.getCache(BeerServiceImpl.CACHE_NAME).clear();
         log.info("Data Initialized. Beer Records loaded {}", beerRepository.count());
     }
 

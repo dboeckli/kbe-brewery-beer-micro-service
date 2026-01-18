@@ -3,7 +3,6 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 import ch.guru.springframework.kbe.lib.dto.BeerInventoryDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -13,19 +12,18 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@Primary // Damit dieser Service immer genommen wird (ersetzt Profile-Logik)
-public class BeerInventoryServiceRestClientImpl implements BeerInventoryService {
+public class BeerInventoryServiceImpl implements BeerInventoryService {
 
     public static final String INVENTORY_PATH = "/api/v1/beer/{beerId}/inventory";
 
     private final RestClient restClient;
     private final RestClient failoverRestClient;
 
-    public BeerInventoryServiceRestClientImpl(RestClient.Builder builder,
-                                              @Value("${sfg.brewery.inventory-user}") String inventoryUser,
-                                              @Value("${sfg.brewery.inventory-password}") String inventoryPassword,
-                                              @Value("${sfg.brewery.beer-inventory-service-host}") String beerInventoryServiceHost,
-                                              @Value("${sfg.brewery.inventory-failover-service-host}") String failoverServiceHost) {
+    public BeerInventoryServiceImpl(RestClient.Builder builder,
+                                    @Value("${sfg.brewery.inventory-user}") String inventoryUser,
+                                    @Value("${sfg.brewery.inventory-password}") String inventoryPassword,
+                                    @Value("${sfg.brewery.beer-inventory-service-host}") String beerInventoryServiceHost,
+                                    @Value("${sfg.brewery.inventory-failover-service-host}") String failoverServiceHost) {
 
         // RestClient konfigurieren mit Basic Auth
         this.restClient = builder

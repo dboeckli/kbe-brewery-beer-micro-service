@@ -1,4 +1,4 @@
-package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
+package ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;

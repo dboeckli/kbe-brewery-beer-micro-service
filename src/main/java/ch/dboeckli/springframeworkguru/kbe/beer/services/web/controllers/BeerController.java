@@ -17,7 +17,7 @@
 
 package ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.services.BeerService;
+import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerService;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;

@@ -1,7 +1,7 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.controllers;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.bootstrap.DefaultBreweryLoader;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.services.BeerService;
+import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerService;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers.BeerController;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;

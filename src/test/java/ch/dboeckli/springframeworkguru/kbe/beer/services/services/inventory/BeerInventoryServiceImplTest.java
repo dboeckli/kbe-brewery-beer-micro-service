@@ -1,7 +1,6 @@
 
-package ch.dboeckli.springframeworkguru.kbe.beer.services.services;
+package ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory;
 
-import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryServiceRestClientImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,17 +16,17 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RestClientTest(BeerInventoryServiceRestClientImpl.class)
+@RestClientTest(BeerInventoryServiceImpl.class)
 @TestPropertySource(properties = {
     "spring.docker.compose.skip.in-tests=true"
 })
-class BeerInventoryServiceRestClientImplTest {
+class BeerInventoryServiceImplTest {
 
     @Autowired
     MockRestServiceServer server;
 
     @Autowired
-    BeerInventoryServiceRestClientImpl beerInventoryService;
+    BeerInventoryServiceImpl beerInventoryService;
 
     @Test
     void getOnhandInventory_Failover() {
