@@ -6,7 +6,10 @@ import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerServi
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import ch.guru.springframework.kbe.lib.events.BrewBeerEvent;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +18,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.CacheManager;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.databind.ObjectMapper;
 
+import java.util.UUID;
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +44,9 @@ public class BrewingServiceIT {
 
     @Autowired
     JmsTemplate jmsTemplate;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     // Wir mocken den InventoryService, da wir keinen echten externen Service aufrufen wollen
     @MockitoBean
@@ -91,13 +101,49 @@ public class BrewingServiceIT {
         // können wir die Nachricht direkt aus dieser Queue konsumieren, um zu beweisen, dass der Listener lief.
 
         // Wir setzen einen Timeout (z.B. 5000ms), da JMS asynchron ist
-        jmsTemplate.setReceiveTimeout(5000);
-        Object receivedMessage = jmsTemplate.receiveAndConvert(brewingRequestQueue);
+        BrewBeerEvent event = awaitEventInQueue(brewingRequestQueue, savedBeer.getId());
 
-        assertThat(receivedMessage).isNotNull();
-        assertThat(receivedMessage).isInstanceOf(BrewBeerEvent.class);
-
-        BrewBeerEvent event = (BrewBeerEvent) receivedMessage;
+        assertThat(event).isNotNull();
+        assertThat(event.getBeerDto().getQuantityOnHand()).isNull();
         assertThat(event.getBeerDto().getId()).isEqualTo(savedBeer.getId());
+    }
+
+    private BrewBeerEvent awaitEventInQueue(String queueName, UUID expectedBeerId) {
+        AtomicReference<BrewBeerEvent> foundEventRef = new AtomicReference<>();
+
+        // Wir setzen ein kurzes Timeout für den JMS-Receive, damit Awaitility die Schleife steuern kann
+        jmsTemplate.setReceiveTimeout(100);
+
+        try {
+            Awaitility.await()
+                .atMost(Duration.ofSeconds(5))
+                .pollInterval(Duration.ofMillis(100))
+                .until(() -> {
+                    Message message = jmsTemplate.receive(queueName);
+
+                    if (message instanceof TextMessage textMessage) {
+                        try {
+                            String payload = textMessage.getText();
+                            BrewBeerEvent event = objectMapper.readValue(payload, BrewBeerEvent.class);
+                            log.info("Got event: {}", event);
+
+                            if (event.getBeerDto() != null && expectedBeerId.equals(event.getBeerDto().getId())) {
+                                foundEventRef.set(event);
+                                return true; // Gefunden!
+                            } else {
+                                log.debug("Ignoriere Nachricht für andere ID: {}", event.getBeerDto().getId());
+                            }
+                        } catch (Exception e) {
+                            log.warn("Konnte Nachricht nicht deserialisieren: {}", e.getMessage());
+                        }
+                    }
+                    return false; // Weiter suchen
+                });
+        } catch (Exception e) {
+            // Awaitility wirft eine Exception bei Timeout -> wir geben null zurück oder lassen den Test hier failen
+            return null;
+        }
+
+        return foundEventRef.get();
     }
 }
