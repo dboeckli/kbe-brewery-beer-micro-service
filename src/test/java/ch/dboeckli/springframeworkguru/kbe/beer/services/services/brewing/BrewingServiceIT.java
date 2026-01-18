@@ -2,6 +2,7 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.services.brewing;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
+import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerServiceImpl;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import ch.guru.springframework.kbe.lib.events.BrewBeerEvent;
@@ -11,19 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.CacheManager;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
-@TestPropertySource(properties = {
+@SpringBootTest(properties = {
     "sfg.brewery.brewing-job-cron=-"
 })
 @Slf4j
@@ -38,9 +38,6 @@ public class BrewingServiceIT {
     @Autowired
     JmsTemplate jmsTemplate;
 
-    @Autowired
-    ObjectMapper objectMapper;
-
     // Wir mocken den InventoryService, da wir keinen echten externen Service aufrufen wollen
     @MockitoBean
     BeerInventoryService beerInventoryService;
@@ -48,8 +45,14 @@ public class BrewingServiceIT {
     @Value("${sfg.brewery.queues.brewing-request}")
     String brewingRequestQueue;
 
+    @Value("${sfg.brewery.brewing-job-cron}")
+    String cron;
+
     @MockitoBean
     BrewBeerListener brewBeerListener;
+
+    @Autowired
+    CacheManager cacheManager;
 
     @BeforeEach
     void setUp() {
@@ -58,6 +61,8 @@ public class BrewingServiceIT {
 
     @Test
     void testBrewingEventFlow() throws Exception {
+        assertEquals("-", cron); // disabled
+
         Beer beer = Beer.builder()
             .beerName("Pilgrim")
             .beerStyle(BeerStyleEnum.IPA)
@@ -68,6 +73,7 @@ public class BrewingServiceIT {
             .build();
 
         Beer savedBeer = beerRepository.save(beer);
+        cacheManager.getCache(BeerServiceImpl.CACHE_NAME).clear();
 
         // Wir simulieren, dass wir nur 1 Bier auf Lager haben (weniger als minOnHand 12)
         given(beerInventoryService.getOnhandInventory(any())).willReturn(1);
