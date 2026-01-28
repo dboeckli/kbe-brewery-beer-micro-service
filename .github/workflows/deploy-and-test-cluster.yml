@@ -72,7 +72,7 @@ jobs:
           --create-namespace \
           --cleanup-on-fail \
           --atomic \
-          --wait --timeout 5m \
+          --wait --timeout 7m \
           --debug \
           --render-subchart-notes
 
