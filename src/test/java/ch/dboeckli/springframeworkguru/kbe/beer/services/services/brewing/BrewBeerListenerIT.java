@@ -2,10 +2,10 @@ package ch.dboeckli.springframeworkguru.kbe.beer.services.services.brewing;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.domain.Beer;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.repositories.BeerRepository;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerServiceImpl;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.services.inventory.BeerInventoryService;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
 import ch.guru.springframework.kbe.lib.events.BrewBeerEvent;
+import ch.guru.springframework.kbe.lib.events.NewInventoryEvent;
+import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import jakarta.jms.Message;
 import jakarta.jms.TextMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -15,29 +15,24 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.CacheManager;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import tools.jackson.databind.ObjectMapper;
 
-import java.util.UUID;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @SpringBootTest(properties = {
-    "sfg.brewery.brewing-job-cron=-"
+    "sfg.brewery.queues.new-inventory=new-inventory-test"
 })
 @Slf4j
-public class BrewingServiceIT {
+public class BrewBeerListenerIT {
 
     @Autowired
-    BrewingService brewingService;
+    BrewBeerListener brewBeerListener;
 
     @Autowired
     BeerRepository beerRepository;
@@ -48,22 +43,8 @@ public class BrewingServiceIT {
     @Autowired
     ObjectMapper objectMapper;
 
-    // Wir mocken den InventoryService, da wir keinen echten externen Service aufrufen wollen
-    @MockitoBean
-    BeerInventoryService beerInventoryService;
-
-    // Wir mocken den BrewBeerListener, damit er die Nachricht nicht konsumiert
-    @MockitoBean
-    BrewBeerListener brewBeerListener;
-
-    @Value("${sfg.brewery.brewing-job-cron}")
-    String cron;
-
-    @Value("${sfg.brewery.queues.brewing-request}")
-    String brewingRequestQueue;
-
-    @Autowired
-    CacheManager cacheManager;
+    @Value("${sfg.brewery.queues.new-inventory}")
+    String newInventoryQueue;
 
     @BeforeEach
     void setUp() {
@@ -71,41 +52,46 @@ public class BrewingServiceIT {
     }
 
     @Test
-    void testBrewingProducer() {
-        assertEquals("-", cron); // disabled
-
+    void testBrewBeerListener() {
+        // ARRANGE: Erstelle ein Beer in der DB
         Beer beer = Beer.builder()
-            .beerName("Pilgrim")
-            .beerStyle(BeerStyleEnum.IPA)
-            .minOnHand(12) // Wir brauchen mindestens 12
+            .beerName("Galaxy Cat")
+            .beerStyle(BeerStyleEnum.PALE_ALE)
+            .minOnHand(12)
             .quantityToBrew(200)
             .upc("123123123123")
             .price(new BigDecimal("12.95"))
             .build();
 
         Beer savedBeer = beerRepository.save(beer);
-        cacheManager.getCache(BeerServiceImpl.CACHE_NAME).clear();
 
-        // Wir simulieren, dass wir nur 1 Bier auf Lager haben (weniger als minOnHand 12)
-        given(beerInventoryService.getOnhandInventory(any())).willReturn(1);
+        // Erstelle ein BrewBeerEvent
+        BeerDto beerDto = BeerDto.builder()
+            .id(savedBeer.getId())
+            .beerName(savedBeer.getBeerName())
+            .beerStyle(savedBeer.getBeerStyle())
+            .upc(savedBeer.getUpc())
+            .price(savedBeer.getPrice())
+            .build();
 
-        // ACT: Den Check manuell auslösen
-        log.info("Testing producer: checkForLowInventory should send BrewBeerEvent");
+        BrewBeerEvent brewBeerEvent = new BrewBeerEvent(beerDto);
 
-        brewingService.checkForLowInventory();
+        // ACT: Sende das BrewBeerEvent auf die brewing-request Queue
+        log.info("Sending BrewBeerEvent for beer: {}", beerDto.getId());
+        brewBeerListener.listen(brewBeerEvent);
 
-        // ASSERT: Wir prüfen, ob ein BrewBeerEvent auf der brewing-request Queue ankommt
-        BrewBeerEvent event = awaitEventInQueue(brewingRequestQueue, savedBeer.getId());
+        // ASSERT: Warte auf NewInventoryEvent auf der new-inventory Queue
+        NewInventoryEvent event = awaitEventInQueue(newInventoryQueue, savedBeer.getId());
 
         assertThat(event).isNotNull();
         assertThat(event.getBeerDto()).isNotNull();
         assertThat(event.getBeerDto().getId()).isEqualTo(savedBeer.getId());
-        assertThat(event.getBeerDto().getBeerName()).isEqualTo("Pilgrim");
-        assertThat(event.getBeerDto().getBeerStyle()).isEqualTo(BeerStyleEnum.IPA);
+        assertThat(event.getBeerDto().getBeerName()).isEqualTo("Galaxy Cat");
+        assertThat(event.getBeerDto().getQuantityOnHand()).isEqualTo(savedBeer.getQuantityToBrew());
     }
 
-    private BrewBeerEvent awaitEventInQueue(String queueName, UUID expectedBeerId) {
-        AtomicReference<BrewBeerEvent> foundEventRef = new AtomicReference<>();
+    private NewInventoryEvent awaitEventInQueue(String queueName, UUID expectedBeerId) {
+        AtomicReference<NewInventoryEvent> foundEventRef = new AtomicReference<>();
 
         // Wir setzen ein kurzes Timeout für den JMS-Receive, damit Awaitility die Schleife steuern kann
         jmsTemplate.setReceiveTimeout(100);
@@ -120,7 +106,7 @@ public class BrewingServiceIT {
                     if (message instanceof TextMessage textMessage) {
                         try {
                             String payload = textMessage.getText();
-                            BrewBeerEvent event = objectMapper.readValue(payload, BrewBeerEvent.class);
+                            NewInventoryEvent event = objectMapper.readValue(payload, NewInventoryEvent.class);
                             log.info("Got event: {}", event);
 
                             if (event.getBeerDto() != null && expectedBeerId.equals(event.getBeerDto().getId())) {
