@@ -12,6 +12,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.UUID;
@@ -72,6 +73,28 @@ public class BeerControllerIT {
             assert fetchedBeerDto != null;
             assertThat(beerDto.getId()).isEqualByComparingTo(fetchedBeerDto.getId());
         });
+    }
+
+    @Test
+    void testListBeersWithInventoryOnHand() {
+        String uri = UriComponentsBuilder.fromPath(API_V1_BEER_BASE)
+            .queryParam("showInventoryOnHand", "true")
+            .toUriString();
+
+        ResponseEntity<BeerPagedList> response = restTemplate.exchange(
+            uri,
+            HttpMethod.GET,
+            null,
+            new ParameterizedTypeReference<>() {
+            }
+        );
+
+        BeerPagedList pagedList = response.getBody();
+
+        assertThat(pagedList).isNotNull();
+        assertThat(pagedList.getContent()).isNotEmpty();
+        assertThat(pagedList.getContent())
+            .anyMatch(beerDto -> beerDto.getQuantityOnHand() != null);
     }
 
     @Test
