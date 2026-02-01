@@ -1,14 +1,17 @@
-package ch.dboeckli.springframeworkguru.kbe.beer.services.controllers;
+package ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers;
 
 import ch.dboeckli.springframeworkguru.kbe.beer.services.bootstrap.DefaultBreweryLoader;
 import ch.dboeckli.springframeworkguru.kbe.beer.services.services.beer.BeerService;
-import ch.dboeckli.springframeworkguru.kbe.beer.services.web.controllers.BeerController;
 import ch.guru.springframework.kbe.lib.dto.BeerDto;
 import ch.guru.springframework.kbe.lib.dto.BeerPagedList;
 import ch.guru.springframework.kbe.lib.dto.BeerStyleEnum;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -22,9 +25,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.atlassian.oai.validator.mockmvc.OpenApiValidationMatchers.openApi;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,7 +115,6 @@ class BeerControllerTest {
 
     }
 
-    @DisplayName("List Ops - ")
     @Nested
     class TestListOperations {
 
@@ -143,7 +143,6 @@ class BeerControllerTest {
                 pageRequestCaptor.capture(), showInventoryCaptor.capture())).willReturn(beerPagedList);
         }
 
-        @DisplayName("Test No Params")
         @Test
         void testNoParams() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON))
@@ -157,7 +156,6 @@ class BeerControllerTest {
             assertThat(25).isEqualTo(pageRequestCaptor.getValue().getPageSize());
         }
 
-        @DisplayName("Test Page Size Param")
         @Test
         void testPageSizeParam() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
@@ -172,7 +170,6 @@ class BeerControllerTest {
             assertThat(200).isEqualTo(pageRequestCaptor.getValue().getPageSize());
         }
 
-        @DisplayName("Test Page Param")
         @Test
         void testPageParam() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
@@ -187,7 +184,6 @@ class BeerControllerTest {
             assertThat(200).isEqualTo(pageRequestCaptor.getValue().getPageSize());
         }
 
-        @DisplayName("Test Beer Name Param")
         @Test
         void testBeerNameParam() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
@@ -203,7 +199,6 @@ class BeerControllerTest {
             assertThat(GALAXY_CAT).isEqualToIgnoringCase(beerNameCaptor.getValue());
         }
 
-        @DisplayName("Test Beer Style Param")
         @Test
         void testBeerStyle() throws Exception {
             mockMvc.perform(get(API_V1_BEER_BASE).accept(MediaType.APPLICATION_JSON)
@@ -220,7 +215,6 @@ class BeerControllerTest {
         }
     }
 
-    @DisplayName("Save Ops - ")
     @Nested
     class TestSaveOperations {
         @Test
@@ -260,7 +254,6 @@ class BeerControllerTest {
         }
     }
 
-    @DisplayName("Save Ops - ")
     @Nested
     class TestUpdateOperations {
 
@@ -294,5 +287,50 @@ class BeerControllerTest {
 
             verifyNoInteractions(beerService);
         }
+    }
+
+    @Test
+    void getBeerByUpc() throws Exception {
+        // given
+        given(beerService.findBeerByUpc(anyString())).willReturn(validReturnBeer);
+
+        // when / then
+        mockMvc.perform(get("/api/v1/beerUpc/" + validReturnBeer.getUpc()).accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.beerName", is("Beer1")))
+            .andExpect(openApi().isValid(OAC_SPEC));
+
+        then(beerService).should().findBeerByUpc(validReturnBeer.getUpc());
+    }
+
+    @Test
+    void deleteBeer() throws Exception {
+        // when / then
+        mockMvc.perform(delete(API_V1_BEER_BASE + "/" + UUID.randomUUID()))
+            .andExpect(status().isNoContent());
+
+        then(beerService).should().deleteById(any(UUID.class));
+    }
+
+    @Test
+    void badRequestHandler_returnsConstraintViolations() throws Exception {
+        // given: ConstraintViolationException simulieren
+        ConstraintViolation<?> violation = Mockito.mock(ConstraintViolation.class);
+        Path path = Mockito.mock(Path.class);
+
+        given(path.toString()).willReturn("beerName");
+        given(violation.getPropertyPath()).willReturn(path);
+        given(violation.getMessage()).willReturn("must not be null");
+
+        Set<ConstraintViolation<?>> violations = Collections.singleton(violation);
+        ConstraintViolationException exception = new ConstraintViolationException(violations);
+
+        given(beerService.findBeerByUpc("bad-upc")).willThrow(exception);
+
+        // when / then
+        mockMvc.perform(get("/api/v1/beerUpc/bad-upc").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("beerName : must not be null")));
     }
 }
