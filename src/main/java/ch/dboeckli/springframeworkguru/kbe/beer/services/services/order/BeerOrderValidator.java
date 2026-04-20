@@ -25,7 +25,8 @@ public class BeerOrderValidator {
             }
         });
 
-        //fail order if UPC not found
+        // fail order if UPC not found
         return beersNotFound.get() == 0;
     }
+
 }

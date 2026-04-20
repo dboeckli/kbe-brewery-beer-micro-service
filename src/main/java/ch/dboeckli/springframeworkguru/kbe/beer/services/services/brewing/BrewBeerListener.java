@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BrewBeerListener {
 
     private final JmsTemplate jmsTemplate;
+
     private final BeerRepository beerRepository;
 
     @Value("${sfg.brewery.queues.new-inventory}")
@@ -31,11 +32,12 @@ public class BrewBeerListener {
         BeerDto dto = brewBeerEvent.getBeerDto();
 
         Beer beer = beerRepository.getReferenceById(dto.getId());
-        //Brewing some beer
+        // Brewing some beer
         dto.setQuantityOnHand(beer.getQuantityToBrew());
 
         NewInventoryEvent newInventoryEvent = new NewInventoryEvent(dto);
         log.info("Sending New Inventory Event for beer: {}", dto);
         jmsTemplate.convertAndSend(newInventoryQueue, newInventoryEvent);
     }
+
 }

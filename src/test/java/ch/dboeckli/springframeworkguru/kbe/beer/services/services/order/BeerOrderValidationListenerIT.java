@@ -22,9 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest(properties = {
-    "sfg.brewery.queues.validate-order-result=validate-order-result-test"
-})
+@SpringBootTest(properties = { "sfg.brewery.queues.validate-order-result=validate-order-result-test" })
 @Slf4j
 class BeerOrderValidationListenerIT {
 
@@ -46,9 +44,7 @@ class BeerOrderValidationListenerIT {
     @Test
     void testValidationListenerSendsResult() {
         // ARRANGE
-        BeerOrderDto order = BeerOrderDto.builder()
-            .id(UUID.randomUUID())
-            .build();
+        BeerOrderDto order = BeerOrderDto.builder().id(UUID.randomUUID()).build();
 
         given(beerOrderValidator.validateOrder(order)).willReturn(true);
 
@@ -70,31 +66,31 @@ class BeerOrderValidationListenerIT {
         jmsTemplate.setReceiveTimeout(100);
 
         try {
-            Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
-                .pollInterval(Duration.ofMillis(100))
-                .until(() -> {
-                    Message message = jmsTemplate.receive(queueName);
-                    if (message instanceof TextMessage textMessage) {
-                        try {
-                            String payload = textMessage.getText();
-                            BeerOrderValidationResult result =
-                                objectMapper.readValue(payload, BeerOrderValidationResult.class);
+            Awaitility.await().atMost(Duration.ofSeconds(5)).pollInterval(Duration.ofMillis(100)).until(() -> {
+                Message message = jmsTemplate.receive(queueName);
+                if (message instanceof TextMessage textMessage) {
+                    try {
+                        String payload = textMessage.getText();
+                        BeerOrderValidationResult result = objectMapper.readValue(payload,
+                                BeerOrderValidationResult.class);
 
-                            if (expectedOrderId.equals(result.getBeerOrderId())) {
-                                foundRef.set(result);
-                                return true;
-                            }
-                        } catch (Exception e) {
-                            log.warn("Konnte Ergebnis nicht deserialisieren: {}", e.getMessage());
+                        if (expectedOrderId.equals(result.getBeerOrderId())) {
+                            foundRef.set(result);
+                            return true;
                         }
                     }
-                    return false;
-                });
-        } catch (Exception e) {
+                    catch (Exception e) {
+                        log.warn("Konnte Ergebnis nicht deserialisieren: {}", e.getMessage());
+                    }
+                }
+                return false;
+            });
+        }
+        catch (Exception e) {
             return null;
         }
 
         return foundRef.get();
     }
+
 }

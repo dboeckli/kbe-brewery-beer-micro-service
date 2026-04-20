@@ -33,20 +33,17 @@ public class BeerControllerIT {
 
     @Test
     void testGetBeers() {
-        ResponseEntity<BeerPagedList> response = restTemplate.exchange(
-            API_V1_BEER_BASE,
-            HttpMethod.GET,
-            null,
-            new ParameterizedTypeReference<>() {
-            }
-        );
+        ResponseEntity<BeerPagedList> response = restTemplate.exchange(API_V1_BEER_BASE, HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
         BeerPagedList pagedList = response.getBody();
 
         assertThat(pagedList).isNotNull();
         assertThat(pagedList.getContent()).hasSize(9);
 
         pagedList.getContent().forEach(beerDto -> {
-            BeerDto fetchedBeerDto = restTemplate.getForObject(API_V1_BEER_BASE + "/" + beerDto.getId().toString(), BeerDto.class);
+            BeerDto fetchedBeerDto = restTemplate.getForObject(API_V1_BEER_BASE + "/" + beerDto.getId().toString(),
+                    BeerDto.class);
             assert fetchedBeerDto != null;
             assertThat(beerDto.getId()).isEqualByComparingTo(fetchedBeerDto.getId());
         });
@@ -81,31 +78,22 @@ public class BeerControllerIT {
             .queryParam("showInventoryOnHand", "true")
             .toUriString();
 
-        ResponseEntity<BeerPagedList> response = restTemplate.exchange(
-            uri,
-            HttpMethod.GET,
-            null,
-            new ParameterizedTypeReference<>() {
-            }
-        );
+        ResponseEntity<BeerPagedList> response = restTemplate.exchange(uri, HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
 
         BeerPagedList pagedList = response.getBody();
 
         assertThat(pagedList).isNotNull();
         assertThat(pagedList.getContent()).isNotEmpty();
-        assertThat(pagedList.getContent())
-            .anyMatch(beerDto -> beerDto.getQuantityOnHand() != null);
+        assertThat(pagedList.getContent()).anyMatch(beerDto -> beerDto.getQuantityOnHand() != null);
     }
 
     @Test
     void testGetBeerByUpc() {
-        ResponseEntity<BeerPagedList> response = restTemplate.exchange(
-            API_V1_BEER_BASE,
-            HttpMethod.GET,
-            null,
-            new ParameterizedTypeReference<>() {
-            }
-        );
+        ResponseEntity<BeerPagedList> response = restTemplate.exchange(API_V1_BEER_BASE, HttpMethod.GET, null,
+                new ParameterizedTypeReference<>() {
+                });
         BeerPagedList pagedList = response.getBody();
 
         assertThat(pagedList).isNotNull();
@@ -131,11 +119,8 @@ public class BeerControllerIT {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity(
-            API_V1_BEER_BASE,
-            new HttpEntity<>(newBeer, headers),
-            Void.class
-        );
+        ResponseEntity<Void> response = restTemplate.postForEntity(API_V1_BEER_BASE, new HttpEntity<>(newBeer, headers),
+                Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getHeaders().getLocation()).isNotNull();
@@ -156,12 +141,8 @@ public class BeerControllerIT {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<Void> response = restTemplate.exchange(
-            API_V1_BEER_BASE + "/" + beerId,
-            HttpMethod.PUT,
-            new HttpEntity<>(updateDto, headers),
-            Void.class
-        );
+        ResponseEntity<Void> response = restTemplate.exchange(API_V1_BEER_BASE + "/" + beerId, HttpMethod.PUT,
+                new HttpEntity<>(updateDto, headers), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
@@ -170,19 +151,13 @@ public class BeerControllerIT {
     void testDeleteBeer() {
         UUID beerId = createBeerAndGetId("IT Delete Beer", "IT-UPC-0003");
 
-        ResponseEntity<Void> deleteResponse = restTemplate.exchange(
-            API_V1_BEER_BASE + "/" + beerId,
-            HttpMethod.DELETE,
-            null,
-            Void.class
-        );
+        ResponseEntity<Void> deleteResponse = restTemplate.exchange(API_V1_BEER_BASE + "/" + beerId, HttpMethod.DELETE,
+                null, Void.class);
 
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        ResponseEntity<BeerDto> getAfterDelete = restTemplate.getForEntity(
-            API_V1_BEER_BASE + "/" + beerId,
-            BeerDto.class
-        );
+        ResponseEntity<BeerDto> getAfterDelete = restTemplate.getForEntity(API_V1_BEER_BASE + "/" + beerId,
+                BeerDto.class);
 
         assertThat(getAfterDelete.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -199,11 +174,8 @@ public class BeerControllerIT {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity(
-            API_V1_BEER_BASE,
-            new HttpEntity<>(invalidBeer, headers),
-            Void.class
-        );
+        ResponseEntity<Void> response = restTemplate.postForEntity(API_V1_BEER_BASE,
+                new HttpEntity<>(invalidBeer, headers), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -220,11 +192,8 @@ public class BeerControllerIT {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        ResponseEntity<Void> response = restTemplate.postForEntity(
-            API_V1_BEER_BASE,
-            new HttpEntity<>(newBeer, headers),
-            Void.class
-        );
+        ResponseEntity<Void> response = restTemplate.postForEntity(API_V1_BEER_BASE, new HttpEntity<>(newBeer, headers),
+                Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
@@ -236,6 +205,5 @@ public class BeerControllerIT {
 
         return UUID.fromString(idString);
     }
-
 
 }

@@ -21,8 +21,11 @@ import java.util.List;
 public class BrewingServiceImpl implements BrewingService {
 
     private final BeerInventoryService beerInventoryService;
+
     private final BeerRepository beerRepository;
+
     private final JmsTemplate jmsTemplate;
+
     private final BeerMapper beerMapper;
 
     @Value("${sfg.brewery.queues.brewing-request}")
@@ -42,10 +45,10 @@ public class BrewingServiceImpl implements BrewingService {
 
             if (beer.getMinOnHand() >= onhandInventoryAmount) {
                 log.info("Current inventory amount  {} for beer {} is lower than minimum {}. Sending Event {}",
-                    onhandInventoryAmount, beer.getBeerName(), beer.getMinOnHand(), brewingRequestQueue);
-                jmsTemplate.convertAndSend(brewingRequestQueue,
-                    new BrewBeerEvent(beerMapper.beerToBeerDto(beer)));
+                        onhandInventoryAmount, beer.getBeerName(), beer.getMinOnHand(), brewingRequestQueue);
+                jmsTemplate.convertAndSend(brewingRequestQueue, new BrewBeerEvent(beerMapper.beerToBeerDto(beer)));
             }
         });
     }
+
 }

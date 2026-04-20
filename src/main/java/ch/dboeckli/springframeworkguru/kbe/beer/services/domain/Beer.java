@@ -53,17 +53,24 @@ public class Beer {
 
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
+
     private String beerName;
+
     @Enumerated(EnumType.STRING)
     private BeerStyleEnum beerStyle;
+
     @Column(unique = true)
     private String upc;
+
     private BigDecimal price;
+
     /**
      * Min on hand qty - used to trigger brew
      */
     private Integer minOnHand;
+
     private Integer quantityToBrew;
+
     private Integer quantityOnHand;
 
     public boolean isNew() {

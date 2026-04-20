@@ -25,7 +25,9 @@ import org.springframework.data.domain.PageRequest;
 import java.util.UUID;
 
 public interface BeerService {
-    BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest, Boolean showInventoryOnHand);
+
+    BeerPagedList listBeers(String beerName, BeerStyleEnum beerStyle, PageRequest pageRequest,
+            Boolean showInventoryOnHand);
 
     BeerDto findBeerById(UUID beerId, Boolean showInventoryOnHand);
 
@@ -36,4 +38,5 @@ public interface BeerService {
     void deleteById(UUID beerId);
 
     BeerDto findBeerByUpc(String upc);
+
 }

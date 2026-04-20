@@ -1,6 +1,5 @@
 package ch.dboeckli.springframeworkguru.kbe.beer.services.config;
 
-
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultConnectionKeepAliveStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -21,19 +20,16 @@ public class BlockingRestTemplateCustomizer implements RestTemplateCustomizer {
         connectionManager.setMaxTotal(100);
         connectionManager.setDefaultMaxPerRoute(20);
 
-        RequestConfig requestConfig = RequestConfig
-            .custom()
+        RequestConfig requestConfig = RequestConfig.custom()
             .setConnectionRequestTimeout(Timeout.ofMilliseconds(3000))
-            //.setSocketTimeout(3000)
+            // .setSocketTimeout(3000)
             .build();
 
-        CloseableHttpClient httpClient = HttpClients
-            .custom()
+        CloseableHttpClient httpClient = HttpClients.custom()
             .setConnectionManager(connectionManager)
             .setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy())
             .setDefaultRequestConfig(requestConfig)
             .build();
-
 
         return new HttpComponentsClientHttpRequestFactory(httpClient);
     }
@@ -42,4 +38,5 @@ public class BlockingRestTemplateCustomizer implements RestTemplateCustomizer {
     public void customize(RestTemplate restTemplate) {
         restTemplate.setRequestFactory(this.clientHttpRequestFactory());
     }
+
 }

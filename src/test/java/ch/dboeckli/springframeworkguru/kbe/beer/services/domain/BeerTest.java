@@ -10,19 +10,16 @@ class BeerTest {
 
     @Test
     void isNew_returnsTrue_whenIdIsNull() {
-        Beer beer = Beer.builder()
-            .id(null)
-            .build();
+        Beer beer = Beer.builder().id(null).build();
 
         assertThat(beer.isNew()).isTrue();
     }
 
     @Test
     void isNew_returnsFalse_whenIdIsSet() {
-        Beer beer = Beer.builder()
-            .id(UUID.randomUUID())
-            .build();
+        Beer beer = Beer.builder().id(UUID.randomUUID()).build();
 
         assertThat(beer.isNew()).isFalse();
     }
+
 }
