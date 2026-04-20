@@ -16,6 +16,7 @@ import static org.mockito.BDDMockito.given;
 public class BeerOrderValidatorTest {
 
     private BeerRepository beerRepository;
+
     private BeerOrderValidator beerOrderValidator;
 
     @BeforeEach
@@ -28,10 +29,8 @@ public class BeerOrderValidatorTest {
     void validateOrder_returnsTrue_whenAllUpcsExist() {
         // ARRANGE
         BeerOrderDto order = BeerOrderDto.builder()
-            .beerOrderLines(List.of(
-                BeerOrderLineDto.builder().upc("UPC-1").build(),
-                BeerOrderLineDto.builder().upc("UPC-2").build()
-            ))
+            .beerOrderLines(List.of(BeerOrderLineDto.builder().upc("UPC-1").build(),
+                    BeerOrderLineDto.builder().upc("UPC-2").build()))
             .build();
 
         given(beerRepository.findByUpc("UPC-1")).willReturn(Beer.builder().build());
@@ -48,10 +47,8 @@ public class BeerOrderValidatorTest {
     void validateOrder_returnsFalse_whenAnyUpcMissing() {
         // ARRANGE
         BeerOrderDto order = BeerOrderDto.builder()
-            .beerOrderLines(List.of(
-                BeerOrderLineDto.builder().upc("UPC-1").build(),
-                BeerOrderLineDto.builder().upc("UPC-MISSING").build()
-            ))
+            .beerOrderLines(List.of(BeerOrderLineDto.builder().upc("UPC-1").build(),
+                    BeerOrderLineDto.builder().upc("UPC-MISSING").build()))
             .build();
 
         given(beerRepository.findByUpc("UPC-1")).willReturn(Beer.builder().build());

@@ -34,19 +34,28 @@ import org.springframework.stereotype.Component;
 public class DefaultBreweryLoader implements CommandLineRunner {
 
     public static final String BEER_1_UPC = "0631234200036";
+
     public static final String BEER_2_UPC = "0631234300019";
+
     public static final String BEER_3_UPC = "0083783375213";
+
     public static final String BEER_4_UPC = "0083783375232";
+
     public static final String BEER_5_UPC = "0083782275213";
+
     public static final String BEER_6_UPC = "0023763375222";
+
     public static final String BEER_7_UPC = "0783783332215";
+
     public static final String BEER_8_UPC = "0883783375217";
+
     public static final String BEER_9_UPC = "0983783375443";
 
     private final BreweryRepository breweryRepository;
-    private final BeerRepository beerRepository;
-    private final CacheManager cacheManager;
 
+    private final BeerRepository beerRepository;
+
+    private final CacheManager cacheManager;
 
     @Override
     public void run(String... args) {
@@ -58,7 +67,6 @@ public class DefaultBreweryLoader implements CommandLineRunner {
         cacheManager.getCache(BeerServiceImpl.CACHE_NAME).clear();
         log.info("Data Initialized. Beer Records loaded {}", beerRepository.count());
     }
-
 
     private void loadBeerData() {
 
@@ -148,10 +156,7 @@ public class DefaultBreweryLoader implements CommandLineRunner {
 
     private void loadBreweryData() {
         if (breweryRepository.count() == 0) {
-            breweryRepository.save(Brewery
-                .builder()
-                .breweryName("Cage Brewing")
-                .build());
+            breweryRepository.save(Brewery.builder().breweryName("Cage Brewing").build());
         }
     }
 

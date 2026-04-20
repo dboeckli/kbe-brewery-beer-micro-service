@@ -42,16 +42,18 @@ import java.util.UUID;
 public class BeerController {
 
     private static final Integer DEFAULT_PAGE_NUMBER = 0;
+
     private static final Integer DEFAULT_PAGE_SIZE = 25;
 
     private final BeerService beerService;
 
-    @GetMapping(produces = {"application/json"}, path = "beer")
-    public ResponseEntity<BeerPagedList> listBeers(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-                                                   @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                                                   @RequestParam(value = "beerName", required = false) String beerName,
-                                                   @RequestParam(value = "beerStyle", required = false) BeerStyleEnum beerStyle,
-                                                   @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
+    @GetMapping(produces = { "application/json" }, path = "beer")
+    public ResponseEntity<BeerPagedList> listBeers(
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "beerName", required = false) String beerName,
+            @RequestParam(value = "beerStyle", required = false) BeerStyleEnum beerStyle,
+            @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
 
         log.info("Listing Beers");
 
@@ -67,14 +69,15 @@ public class BeerController {
             pageSize = DEFAULT_PAGE_SIZE;
         }
 
-        BeerPagedList beerList = beerService.listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize), showInventoryOnHand);
+        BeerPagedList beerList = beerService.listBeers(beerName, beerStyle, PageRequest.of(pageNumber, pageSize),
+                showInventoryOnHand);
 
         return new ResponseEntity<>(beerList, HttpStatus.OK);
     }
 
-    @GetMapping(path = {"beer/{beerId}"}, produces = {"application/json"})
+    @GetMapping(path = { "beer/{beerId}" }, produces = { "application/json" })
     public ResponseEntity<BeerDto> getBeerById(@PathVariable UUID beerId,
-                                               @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
+            @RequestParam(value = "showInventoryOnHand", required = false) Boolean showInventoryOnHand) {
 
         log.debug("Get Request for BeerId: " + beerId);
 
@@ -85,7 +88,7 @@ public class BeerController {
         return new ResponseEntity<>(beerService.findBeerById(beerId, showInventoryOnHand), HttpStatus.OK);
     }
 
-    @GetMapping(path = {"beerUpc/{upc}"}, produces = {"application/json"})
+    @GetMapping(path = { "beerUpc/{upc}" }, produces = { "application/json" })
     public ResponseEntity<BeerDto> getBeerByUpc(@PathVariable String upc) {
         return new ResponseEntity<>(beerService.findBeerByUpc(upc), HttpStatus.OK);
     }
@@ -97,13 +100,13 @@ public class BeerController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        //todo hostname for uri
+        // todo hostname for uri
         httpHeaders.add("Location", "/api/v1/beer_service/" + savedDto.getId().toString());
 
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
-    @PutMapping(path = {"beer/{beerId}"}, produces = {"application/json"})
+    @PutMapping(path = { "beer/{beerId}" }, produces = { "application/json" })
     public ResponseEntity updateBeer(@PathVariable UUID beerId, @Valid @RequestBody BeerDto beerDto) {
 
         beerService.updateBeer(beerId, beerDto);
@@ -111,7 +114,7 @@ public class BeerController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping({"beer/{beerId}"})
+    @DeleteMapping({ "beer/{beerId}" })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBeer(@PathVariable UUID beerId) {
         beerService.deleteById(beerId);
@@ -122,7 +125,9 @@ public class BeerController {
     ResponseEntity<List<String>> badReqeustHandler(ConstraintViolationException ex) {
         List<String> errors = new ArrayList<>(ex.getConstraintViolations().size());
 
-        ex.getConstraintViolations().forEach(constraintViolation -> errors.add(constraintViolation.getPropertyPath().toString() + " : " + constraintViolation.getMessage()));
+        ex.getConstraintViolations()
+            .forEach(constraintViolation -> errors
+                .add(constraintViolation.getPropertyPath().toString() + " : " + constraintViolation.getMessage()));
 
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }

@@ -15,7 +15,9 @@ import static org.mockito.BDDMockito.given;
 class BeerMapperDecoratorTest {
 
     private BeerInventoryService beerInventoryService;
+
     private BeerMapper delegateMapper;
+
     private BeerMapperDecorator decorator;
 
     @BeforeEach
@@ -51,13 +53,9 @@ class BeerMapperDecoratorTest {
         // ARRANGE
         UUID beerId = UUID.randomUUID();
 
-        Beer beer = Beer.builder()
-            .id(beerId)
-            .build();
+        Beer beer = Beer.builder().id(beerId).build();
 
-        BeerDto dto = BeerDto.builder()
-            .id(beerId)
-            .build();
+        BeerDto dto = BeerDto.builder().id(beerId).build();
 
         given(delegateMapper.beerToBeerDto(beer)).willReturn(dto);
         given(beerInventoryService.getOnhandInventory(beerId)).willReturn(42);

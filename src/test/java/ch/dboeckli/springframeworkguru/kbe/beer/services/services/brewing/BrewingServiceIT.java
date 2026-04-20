@@ -30,9 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@SpringBootTest(properties = {
-    "sfg.brewery.brewing-job-cron=-"
-})
+@SpringBootTest(properties = { "sfg.brewery.brewing-job-cron=-" })
 @Slf4j
 public class BrewingServiceIT {
 
@@ -48,7 +46,8 @@ public class BrewingServiceIT {
     @Autowired
     ObjectMapper objectMapper;
 
-    // Wir mocken den InventoryService, da wir keinen echten externen Service aufrufen wollen
+    // Wir mocken den InventoryService, da wir keinen echten externen Service aufrufen
+    // wollen
     @MockitoBean
     BeerInventoryService beerInventoryService;
 
@@ -107,39 +106,42 @@ public class BrewingServiceIT {
     private BrewBeerEvent awaitEventInQueue(String queueName, UUID expectedBeerId) {
         AtomicReference<BrewBeerEvent> foundEventRef = new AtomicReference<>();
 
-        // Wir setzen ein kurzes Timeout für den JMS-Receive, damit Awaitility die Schleife steuern kann
+        // Wir setzen ein kurzes Timeout für den JMS-Receive, damit Awaitility die
+        // Schleife steuern kann
         jmsTemplate.setReceiveTimeout(100);
 
         try {
-            Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
-                .pollInterval(Duration.ofMillis(100))
-                .until(() -> {
-                    Message message = jmsTemplate.receive(queueName);
+            Awaitility.await().atMost(Duration.ofSeconds(5)).pollInterval(Duration.ofMillis(100)).until(() -> {
+                Message message = jmsTemplate.receive(queueName);
 
-                    if (message instanceof TextMessage textMessage) {
-                        try {
-                            String payload = textMessage.getText();
-                            BrewBeerEvent event = objectMapper.readValue(payload, BrewBeerEvent.class);
-                            log.info("Got event: {}", event);
+                if (message instanceof TextMessage textMessage) {
+                    try {
+                        String payload = textMessage.getText();
+                        BrewBeerEvent event = objectMapper.readValue(payload, BrewBeerEvent.class);
+                        log.info("Got event: {}", event);
 
-                            if (event.getBeerDto() != null && expectedBeerId.equals(event.getBeerDto().getId())) {
-                                foundEventRef.set(event);
-                                return true; // Gefunden!
-                            } else {
-                                log.debug("Ignoriere Nachricht für andere ID: {}", event.getBeerDto().getId());
-                            }
-                        } catch (Exception e) {
-                            log.warn("Konnte Nachricht nicht deserialisieren: {}", e.getMessage());
+                        if (event.getBeerDto() != null && expectedBeerId.equals(event.getBeerDto().getId())) {
+                            foundEventRef.set(event);
+                            return true; // Gefunden!
+                        }
+                        else {
+                            log.debug("Ignoriere Nachricht für andere ID: {}", event.getBeerDto().getId());
                         }
                     }
-                    return false; // Weiter suchen
-                });
-        } catch (Exception e) {
-            // Awaitility wirft eine Exception bei Timeout -> wir geben null zurück oder lassen den Test hier failen
+                    catch (Exception e) {
+                        log.warn("Konnte Nachricht nicht deserialisieren: {}", e.getMessage());
+                    }
+                }
+                return false; // Weiter suchen
+            });
+        }
+        catch (Exception e) {
+            // Awaitility wirft eine Exception bei Timeout -> wir geben null zurück oder
+            // lassen den Test hier failen
             return null;
         }
 
         return foundEventRef.get();
     }
+
 }

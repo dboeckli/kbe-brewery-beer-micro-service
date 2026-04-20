@@ -17,9 +17,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(BeerInventoryServiceImpl.class)
-@TestPropertySource(properties = {
-    "spring.docker.compose.skip.in-tests=true"
-})
+@TestPropertySource(properties = { "spring.docker.compose.skip.in-tests=true" })
 class BeerInventoryServiceImplTest {
 
     @Autowired
@@ -34,13 +32,15 @@ class BeerInventoryServiceImplTest {
         // Simulierter JSON-Response vom Failover-Service
         String failoverResponse = "[{\"id\":\"" + UUID.randomUUID() + "\", \"quantityOnHand\": 999}]";
 
-        // 1. Erwartung: Aufruf an den Haupt-Service schlägt fehl (500 Internal Server Error)
+        // 1. Erwartung: Aufruf an den Haupt-Service schlägt fehl (500 Internal Server
+        // Error)
         server.expect(requestTo("http://localhost:8082/api/v1/beer/" + beerId + "/inventory"))
-                .andRespond(withServerError());
+            .andRespond(withServerError());
 
-        // 2. Erwartung: Daraufhin erfolgt der Aufruf an den Failover-Service, der erfolgreich antwortet
+        // 2. Erwartung: Daraufhin erfolgt der Aufruf an den Failover-Service, der
+        // erfolgreich antwortet
         server.expect(requestTo("http://localhost:8083/inventory-failover"))
-                .andRespond(withSuccess(failoverResponse, MediaType.APPLICATION_JSON));
+            .andRespond(withSuccess(failoverResponse, MediaType.APPLICATION_JSON));
 
         // Test-Ausführung
         Integer onHand = beerInventoryService.getOnhandInventory(beerId);
@@ -62,4 +62,5 @@ class BeerInventoryServiceImplTest {
 
         assertEquals(50, onHand);
     }
+
 }

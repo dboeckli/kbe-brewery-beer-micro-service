@@ -25,9 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = {
-    "sfg.brewery.queues.new-inventory=new-inventory-test"
-})
+@SpringBootTest(properties = { "sfg.brewery.queues.new-inventory=new-inventory-test" })
 @Slf4j
 public class BrewBeerListenerIT {
 
@@ -93,39 +91,42 @@ public class BrewBeerListenerIT {
     private NewInventoryEvent awaitEventInQueue(String queueName, UUID expectedBeerId) {
         AtomicReference<NewInventoryEvent> foundEventRef = new AtomicReference<>();
 
-        // Wir setzen ein kurzes Timeout für den JMS-Receive, damit Awaitility die Schleife steuern kann
+        // Wir setzen ein kurzes Timeout für den JMS-Receive, damit Awaitility die
+        // Schleife steuern kann
         jmsTemplate.setReceiveTimeout(100);
 
         try {
-            Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
-                .pollInterval(Duration.ofMillis(100))
-                .until(() -> {
-                    Message message = jmsTemplate.receive(queueName);
+            Awaitility.await().atMost(Duration.ofSeconds(5)).pollInterval(Duration.ofMillis(100)).until(() -> {
+                Message message = jmsTemplate.receive(queueName);
 
-                    if (message instanceof TextMessage textMessage) {
-                        try {
-                            String payload = textMessage.getText();
-                            NewInventoryEvent event = objectMapper.readValue(payload, NewInventoryEvent.class);
-                            log.info("Got event: {}", event);
+                if (message instanceof TextMessage textMessage) {
+                    try {
+                        String payload = textMessage.getText();
+                        NewInventoryEvent event = objectMapper.readValue(payload, NewInventoryEvent.class);
+                        log.info("Got event: {}", event);
 
-                            if (event.getBeerDto() != null && expectedBeerId.equals(event.getBeerDto().getId())) {
-                                foundEventRef.set(event);
-                                return true; // Gefunden!
-                            } else {
-                                log.debug("Ignoriere Nachricht für andere ID: {}", event.getBeerDto().getId());
-                            }
-                        } catch (Exception e) {
-                            log.warn("Konnte Nachricht nicht deserialisieren: {}", e.getMessage());
+                        if (event.getBeerDto() != null && expectedBeerId.equals(event.getBeerDto().getId())) {
+                            foundEventRef.set(event);
+                            return true; // Gefunden!
+                        }
+                        else {
+                            log.debug("Ignoriere Nachricht für andere ID: {}", event.getBeerDto().getId());
                         }
                     }
-                    return false; // Weiter suchen
-                });
-        } catch (Exception e) {
-            // Awaitility wirft eine Exception bei Timeout -> wir geben null zurück oder lassen den Test hier failen
+                    catch (Exception e) {
+                        log.warn("Konnte Nachricht nicht deserialisieren: {}", e.getMessage());
+                    }
+                }
+                return false; // Weiter suchen
+            });
+        }
+        catch (Exception e) {
+            // Awaitility wirft eine Exception bei Timeout -> wir geben null zurück oder
+            // lassen den Test hier failen
             return null;
         }
 
         return foundEventRef.get();
     }
+
 }

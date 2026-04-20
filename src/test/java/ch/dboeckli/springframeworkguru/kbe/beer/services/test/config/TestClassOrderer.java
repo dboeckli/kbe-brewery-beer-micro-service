@@ -9,6 +9,7 @@ import java.util.Comparator;
 
 @Slf4j
 public class TestClassOrderer implements ClassOrderer {
+
     private static int getOrder(ClassDescriptor classDescriptor) {
         String className = classDescriptor.getTestClass().getSimpleName();
         return switch (className) {
@@ -22,4 +23,5 @@ public class TestClassOrderer implements ClassOrderer {
     public void orderClasses(ClassOrdererContext classOrdererContext) {
         classOrdererContext.getClassDescriptors().sort(Comparator.comparingInt(TestClassOrderer::getOrder));
     }
+
 }

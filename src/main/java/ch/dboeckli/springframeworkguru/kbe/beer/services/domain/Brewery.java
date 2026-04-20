@@ -51,6 +51,7 @@ public class Brewery {
 
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
+
     private String breweryName;
 
     public boolean isNew() {

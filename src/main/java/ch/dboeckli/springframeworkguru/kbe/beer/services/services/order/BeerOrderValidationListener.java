@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class BeerOrderValidationListener {
 
     private final BeerOrderValidator beerOrderValidator;
+
     private final JmsTemplate jmsTemplate;
 
     @Value("${sfg.brewery.queues.validate-order-result}")
@@ -27,9 +28,11 @@ public class BeerOrderValidationListener {
 
         log.info("Validation Result for Order Id: " + event.getBeerOrder() + " is: " + orderIsValid);
 
-        jmsTemplate.convertAndSend(validateOrderResultQueue, BeerOrderValidationResult.builder()
-            .beerOrderId(event.getBeerOrder().getId())
-            .isValid(orderIsValid)
-            .build());
+        jmsTemplate.convertAndSend(validateOrderResultQueue,
+                BeerOrderValidationResult.builder()
+                    .beerOrderId(event.getBeerOrder().getId())
+                    .isValid(orderIsValid)
+                    .build());
     }
+
 }
