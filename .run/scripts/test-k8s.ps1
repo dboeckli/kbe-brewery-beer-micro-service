@@ -2,5 +2,5 @@ cd target/helm/repo
 
 $file = Get-ChildItem -Filter kbe-brewery-beer-micro-service-chart-*.tgz | Select-Object -First 1
 $APPLICATION_NAME = Get-ChildItem -Directory | Where-Object { $_.LastWriteTime -ge $file.LastWriteTime } | Select-Object -ExpandProperty Name
-
-helm uninstall $APPLICATION_NAME --namespace kbe-brewery-beer-micro-service
+Write-Host "test application: $APPLICATION_NAME"
+helm test $APPLICATION_NAME --namespace kbe-brewery-beer-micro-service --logs
