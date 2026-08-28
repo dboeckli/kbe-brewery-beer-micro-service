@@ -67,8 +67,8 @@ is needed here. On a normal host (Windows/CI) this does not apply either.
 
 - Deployment is Helm-only: chart in `helm-charts/` (name `kbe-brewery-beer-micro-service-chart`),
   packaged to `target/helm/repo/`, release name = `kbe-brewery-beer-micro-service`, namespace
-  `kbe-brewery-beer-micro-service`. The README's raw `kubectl` flow references a `k8s/` source dir
-  that no longer exists — ignore those sections.
+  `kbe-brewery-beer-micro-service`. A `k8s/` source dir no longer exists — deploy via Helm only
+  (see README, `.run/` scripts).
 - CI (`.github/workflows/`): `maven-build.yml` builds + deploys snapshots and triggers
   `deploy-and-test-cluster.yml`; `release.yml` runs `mvn release:prepare release:perform` on
   main/master only (version must be `-SNAPSHOT`); SonarCloud analysis runs in the `analyze` job.
